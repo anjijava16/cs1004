@@ -1,0 +1,33 @@
+Name: Kai-Zhan Lee
+UNI: kl2792
+Project Brainstorming
+
+Requirements: (Convince Matthew that I understand OOP)
+	Polymorphism
+	Inheritance
+	Interfaces
+	try/catch, finally, throws
+	Perhaps graph theory.
+GUIs:
+	extends JComponent (javax.swing.JComponent)
+	Override paintComponent(Graphics g)
+	change to Graphics2D
+		setColor()
+		drawLine()
+	Graphics
+		getBorder()
+		getBounds(Rectangle rv) -- rectangle around it
+		getComponentGraphics(Graphic g)
+		setPreferredSize(Dimension preferredSize) -- sets the preferred size of this component.
+	KeyListener
+		keyPressed(KeyEvent)
+		keyReleased(KeyEvent)
+		keyTyped(KeyEvent) -- pressed and released
+	KeyAdapter
+1) Functionality:
+	1) Evolution Simulation: different types of organisms struggle to survive -- represented by different colored cells
+	2) Gas Laws Simulation (PV = nRT)
+	3) 
+	4)
+	5)
+	

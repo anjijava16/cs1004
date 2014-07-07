@@ -1,0 +1,164 @@
+Name: Kai-Zhan Lee
+UNI: kl2792
+CS 1004, Summer 2014
+Assignment 2 README
+
+a)
+main:
+1. Prints out "usingEveryThird".
+2. Uses everyThird() to print out every third number in the input.
+3. Prints out "usingEveryFifth".
+4. Uses everyFifth() to print out every fifth number in the input.
+5. Prints out "usingEveryThirdOrFifth"
+6. Uses everyThirdOrFifth() to print out every third and fifth number in the
+   input.
+
+usingEveryThird(int[] args):
+	Prints out every third number in the args array.
+usingEveryFifth(int[] args):
+	Prints out every fifth number in the args array.
+usingEveryThirdOrFifth(int[] args):
+	Prints out every third and fifth number in the args array.
+
+b)
+main:
+1. If there are no parameters (i.e. args.length == 0), prints out "No
+   parameters entered. Please enter a parameter." and exits with 1.
+2. Converts args[0] into an int (assuming it is an int) using
+   Integer.parseInt().
+3. Otherwise, uses the collatzSequence(args[0]).
+
+collatzSequence(int num):
+1. If the parameter is negative, make it positive.
+2. If the parameter is zero, do nothing.
+3. Outputs the values for the collatz sequence starting from that number
+    Prints the number out before changing it.
+	If the current number is odd, triple it and add one.
+	If the current number is even, halve it.
+	Stops when it gets to one.
+
+c)
+main:
+1. If there are no parameters (i.e. args.length == 0), prints out "Goodbye!"
+   and quits.
+2. Otherwise, if there are arguments, turns args[0] into an int, using
+   Integer.parseInt(args[0]).
+3. Runs action2c() with input Integer.parseInt(args[0]).
+
+action2c(int num):
+1. If the parameter is 0, outputs "No Zeroes" and returns.
+2. If the parameter is negative, multiplies it by -1 and makes it positive.
+3. Counts the number of items that would be in the collatz sequence for the
+   number.
+4. Creates a String array with that length and fills it with the collatz
+   sequence.
+5. Prints out the array of the collatz sequence data.
+
+d)
+
+STORY: See methods truth() and choice(). They describe the story in detail.
+
+Note: The below is just a summary of what each of the methods do with regard to
+      the program/story.
+
+main(String[] args): starts off the program with title();
+	Goes to: title() (no choice)
+
+title(): displays the title of the game and initiates introduction();
+	Goes to: introduction() (no choice)
+	
+introduction(): describes the room and introduces computer.
+	Goes to: fakeConcussion(), memoryCheck(), checkInjured()
+
+checkInjured(): since person hasn't responded, computer asks again how the
+                person is feeling.
+	Goes to: fakeConcussion(), fakeEscapePod(), checkInjured()
+
+fakeConcussion(): computer lies about the cause of the concussion person
+                  experienced.
+	Goes to: fakeEscapePod(), memoryCheck()
+
+fakeEscapePod(): computer lies about the escape pod, and person's discomfort is
+                 roused.
+	Goes to: memoryCheck()
+
+memoryCheck(): computer asks about person's memory.
+	Goes to: rememberedMemory(), memoryLoss()
+
+rememberedMemory(): computer becomes nervous and asks what person remembers.
+	Goes to: fakeMemoryImpairment(), memoryLoss()
+
+fakeMemoryImpairment(): computer lies that person's memory has been impaired.
+	Goes to: fakeHistory(), skipHistory()
+
+memoryLoss(): computer tells person about memory loss.
+	Goes to: fakeHistory(), skipHistory()
+
+fakeHistory(): computer creates a nonsensical story and lies to person about
+               the reason person is in the metal cubicle.
+	Goes to: idle(), think(), examineWall()
+
+skipHistory(): computer skips the reason person is in the metal cubicle.
+	Goes to idle(), think(), fakeHistory(), examineWall()
+
+idle(): person sits around and does nothing, so computer offers to entertain
+        person.
+	Goes to: entertainment(), rejectedEntertainment()
+
+entertainment(): computer describes what entertainment can be offered.
+	Goes to: readStoryEntertainment(), lookAtPicturesEntertainment(),
+	         playChessEntertainment(), listenToMusicEntertainment()
+
+readStoryEntertainment(): computer offers to read a story to person.
+	Goes to: entertainmentDeath(), rejectedEntertainment()
+
+lookAtPicturesEntertainment(): computer offers to show pictures to person.
+	Goes to: entertainmentDeath(), rejectedEntertainment()
+
+playChessEntertainment(): computer offers to play chess with person.
+	Goes to: entertainmentDeath(), rejectedEntertainment()
+
+listenToMusicEntertainment(): computer offers to play an album of music
+	Goes to: entertainmentDeath(), rejectedEntertainment()
+
+entertainmentDeath(): computer entertains person for over 3 hours, so the
+                      ship's shield breaks, and person dies.
+	Goes to: N/A (ENDING)
+
+rejectedEntertainment(): person changes mind about entertainment.
+	Goes to: idle(), think(), fakeHistory(), examineWall()
+
+think(): person thinks about computer's semi-nonsensical story and gets a hint
+         to look at the wall.
+	Goes to: idle(), fakeHistory(), examineWall()
+
+examineWall(): person examines the wall and sees what is on it.
+	Goes to: escPod(), window(), rations(), AGS(), idle(), think(),
+	         fakeHistory()
+
+escPod(): person asks about the door labeled 'Esc. Pod' and receives a suspicious answer.
+	Goes to: revealed(), idle()
+
+window(): person asks about what looks like a window and receives a suspicious answer.
+	Goes to: lookAtPicturesEntertainment(), revealed(), idle()
+
+AGS(): person asks what "AGS" stands for and receives a suspicious answer.
+	Goes to: revealed(), idle()
+
+rations(): person asks about food, and computer answers.
+	Goes to: idle()
+
+revealed(): person catches computer lying.
+	Goes to: truth()
+
+truth(): computer tells the background of the reason person is here.
+	Goes to: choice()
+
+choice(): computer asks person to choose whether to leave (and most likely die) or stay (and die accompanied).
+	Goes to: stay(), leave()
+
+stay(): person stays with computer.
+	Goes to: N/A (ENDING)
+
+leave(): person leaves computer.
+	Goes to: N/A (ENDING)

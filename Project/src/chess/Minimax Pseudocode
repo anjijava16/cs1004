@@ -1,0 +1,118 @@
+Name: Kai-Zhan Lee
+UNI: kl2792
+Minimax Algorithm Pseudocode
+
+minimax(node, depth, maximizingPlayer)
+	if depth = 0 or node is a terminal node
+		return the heuristic value of node
+	if maximizingPlayer
+		bestValue := -∞
+		for each child of node
+			val := minimax(child, depth - 1, FALSE)
+			bestValue := max(bestValue, val)
+		return bestValue
+	else
+		bestValue := +∞
+		for each child of node
+			val := minimax(child, depth - 1, TRUE)
+			bestValue := min(bestValue, val)
+		return bestValue
+
+------------------------Failed Attempts----------------------------------------
+1.
+		// Remove all moves that result in check TODO
+		// for (Move move : allMoves)
+		// if (move.causesCheck())
+		// allMoves.remove(move);
+
+		// The possible optimal moves, looking timesLeft steps ahead.
+		Vector<Move> choices = new Vector<Move>();
+
+		// Setting the chosen move.
+		if (turn.equals(callerColor)) { // If it's the original caller's turn
+			if (steps == 0) // If this is true, just choose a random move.
+				choices.addAll(allMoves);
+			else if (steps == 1) { // If this is true, choose best move.
+				for (Move move : allMoves)
+					if (move.doesCheckMate()) {
+						choices.removeAllElements();
+						choices.add(move);
+						break;
+					} else if (choices.size() == 0) {
+						choices.add(move);
+					} else if (choices.lastElement().getScore() < move
+							.getScore()) {
+						choices.removeAllElements();
+						choices.add(move);
+					} else if (choices.lastElement().getScore() == move
+							.getScore()) {
+						choices.add(move);
+					}
+			} else { // If this is true, just choose best minimax move.
+				for (Move move : allMoves) {
+					if (move.doesCheckMate()) {
+						choices.removeAllElements();
+						choices.add(move);
+						break;
+					}
+					move.setScore(minimax(
+							score + move.getScore(),
+							steps - 1,
+							chessBoard.removeGame().fakeMove(move),
+							oppositeColor(callerColor)).getScore());
+					if (choices.size() == 0) {
+						choices.add(move);
+					} else if (choices.lastElement().getScore() < move
+							.getScore()) {
+						choices.removeAllElements();
+						choices.add(move);
+					} else if (choices.lastElement().getScore() == move
+							.getScore()) {
+						choices.add(move);
+					}
+				}
+			}
+		} else { // If it's not the original caller's turn
+			if (steps == 0) // If this is true, just choose a random move.
+				choices.add(random(allMoves));
+			else if (steps == 1) { // If this is true, choose best move.
+				for (Move move : allMoves)
+					if (move.doesCheckMate()) {
+						choices.removeAllElements();
+						choices.add(move);
+						break;
+					} else if (choices.size() == 0) {
+						choices.add(move);
+					} else if (choices.lastElement().getScore() > move
+							.getScore()) {
+						choices.removeAllElements();
+						choices.add(move);
+					} else if (choices.lastElement().getScore() == move
+							.getScore()) {
+						choices.add(move);
+					}
+			} else { // If this is true, just choose best minimax move.
+				for (Move move : allMoves) {
+					if (move.doesCheckMate()) {
+						choices.removeAllElements();
+						choices.add(move);
+						break;
+					}
+					move.setScore(minimax(
+							score - move.getScore(),
+							steps - 1,
+							chessBoard.removeGame().fakeMove(move),
+							oppositeColor(callerColor)).getScore());
+					if (choices.size() == 0) {
+						choices.add(move);
+					} else if (choices.lastElement().getScore() > move
+							.getScore()) {
+						choices.removeAllElements();
+						choices.add(move);
+					} else if (choices.lastElement().getScore() == move
+							.getScore()) {
+						choices.add(move);
+					}
+				}
+			}
+		}

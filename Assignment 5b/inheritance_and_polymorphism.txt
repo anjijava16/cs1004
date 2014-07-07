@@ -1,0 +1,47 @@
+
+Represent the following with inheritance / polymorphism (i.e. write code)
+
+
+Account
+  information the account should maintain:
+    owner name
+    owner surname
+
+  information we should be able to query the account for
+    interest rate
+    balance ($0, $0.01, ..., $10.05)
+    what the withdrawl fee is
+    transfer fee to a given second account
+    return whether a transfer to a second account is even possible
+      - maybe there isn't enough money in the account for the fee and the transfer
+
+  operations we want to be able to do
+    deposit a positive amount of money (decrease balance)
+    withdraw a positive amount of money (increase balance)
+      - additionally, charge the withdrawl fee
+    transfer from one account to another
+      - additionally, charge the source account the given fee
+    apply one month's interest
+      - if the rate is r, then we multiply the principle by 1.0 + (r/12.0)
+
+Savings Account
+  what we know about Savings accounts
+    the interest rate should be 2.0% (wow!)
+    withdrawl fee is $1
+    the transfer fees are as follows:
+          account type   same owner?   fee($)
+            savings         yes          0
+           checking         yes          1
+            savings         no           5
+           checking         no          10
+
+Checking Account
+  what we know about Checking accounts
+    the interest rate should be 0.1% (wow!)
+    withdrawl fee is $0
+    the transfer fees are as follows:
+          account type   same owner?   fee($)
+            savings         yes          0
+           checking         yes          0
+            savings         no           5
+           checking         no          10

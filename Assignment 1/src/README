@@ -1,0 +1,36 @@
+Name: Kai-Zhan Lee
+UNI: kl2792
+CS 1004, Summer 2014
+Assignment 1 README
+
+Note: you could take a look at the comments if you'd like, because I
+basically repeat here what I say in them.
+
+a)
+1. I created a scanner (Scanner) to read in the two numbers.
+2. Then, I prompted the user for an integer, read it using the Scanner, and
+   stored it in num1.
+3. After that, I prompted the user for a second integer, read it, and stored it
+   in num2.
+4. Finally, I printed out, on different lines, the sum, difference, product, and
+   modulo of the two numbers.
+b)
+1. I created six variables: scanner (Scanner), and line0 to line5 (Strings).
+2. Then, I prompted the user for five lines of text.
+3. After that, I used the scanner to read the lines in and Strings line0 to line5
+   to store them.
+4. Finally, I printed them out in reverse order.
+c)
+1. I created variables corresponding to each piece of the requested information
+   (i.e. myName, instructorName, myDesiredPerceivedAge, myHomeInstitution,
+   courseInstitution, courseName, courseRoom).
+2. Then, I printed out, in one full and lengthy sentence (and one
+   System.out.println()), the variables in meaningful English.
+d)
+1. I created a Scanner variable called scanner and one variable of each of the
+   primitive types.
+2. Then, I prompted the user to enter one of each primitive type, used scanner
+   to read each value in (though, since there is no 'nextChar()' method in
+   Scanner, I had to just use 'scanner.next().charAt(0)'.), and stored each
+   value in each corresponding variable.
+3. Finally, I printed the values out on separate lines in the same order.

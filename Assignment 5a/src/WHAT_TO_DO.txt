@@ -1,0 +1,10 @@
+Name: Kai-Zhan Lee
+Uni: kl2792
+
+1) do not edit the any of the java files
+2) put your name & UNI at the top of this page
+3) organize the files appropriately so that Geometry.java compiles
+4) compile Geometry.java
+5) take a screenshot of Geometry.java running on CUNIX
+6) mention what you did in your readme.txt
+7) zip all of the properly organized code together with this file
