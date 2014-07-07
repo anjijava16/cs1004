@@ -6,13 +6,6 @@ import java.util.ArrayList;
 
 import javax.swing.JComponent;
 
-import chess.pieces.Bishop;
-import chess.pieces.King;
-import chess.pieces.Knight;
-import chess.pieces.Pawn;
-import chess.pieces.Queen;
-import chess.pieces.Rook;
-
 /**
  * ChessPiece is the basic class for all chess pieces.
  *
@@ -63,7 +56,7 @@ abstract public class ChessPiece extends JComponent implements ChessPieces {
 	protected char UTF8Character;
 
 	/**
-	 * The board that this piece is on.
+	 * The actual ChessBoard that this piece is on.
 	 */
 	protected ChessBoard board;
 
@@ -91,19 +84,14 @@ abstract public class ChessPiece extends JComponent implements ChessPieces {
 		g.setColor(color);
 		if (equals(board.getSelectedPiece())) {
 			g.setFont(ChessBoard.FONT);
-			g.drawChars(array, 0, 1, board.getGame().getMouseX() -
-					ChessBoard.SQUARE_SIZE / 2, board.getGame().getMouseY() -
-					ChessBoard.SQUARE_SIZE / 2);
-		} else {
-			g.drawChars(
-					array,
-					0,
-					1,
+			g.drawChars(array, 0, 1, board.getGame().getMouseX()
+					- ChessBoard.SQUARE_SIZE / 2, board.getGame().getMouseY()
+					- ChessBoard.SQUARE_SIZE / 2);
+		} else
+			g.drawChars(array, 0, 1,
 					ChessBoard.SQUARE_SIZE * (position.getFile() - 1),
-					ChessBoard.SQUARE_SIZE *
-							(2 * 4 - (position.getRank() - 1)) -
-							ChessBoard.OFFSET_CORRECTION);
-		}
+					ChessBoard.SQUARE_SIZE * (2 * 4 - (position.getRank() - 1))
+							- ChessBoard.OFFSET_CORRECTION);
 	}
 
 	public void paint(Graphics g) {
@@ -112,8 +100,8 @@ abstract public class ChessPiece extends JComponent implements ChessPieces {
 
 		ChessBoard.SQUARE_SIZE * (position.getFile() - 1),
 
-		ChessBoard.SQUARE_SIZE * (2 * 4 - (position.getRank() - 1)) -
-				ChessBoard.OFFSET_CORRECTION);
+		ChessBoard.SQUARE_SIZE * (2 * 4 - (position.getRank() - 1))
+				- ChessBoard.OFFSET_CORRECTION);
 	}
 
 	/**
@@ -210,8 +198,8 @@ abstract public class ChessPiece extends JComponent implements ChessPieces {
 	 * @return Whether this piece can execute the given move..
 	 */
 	public boolean canExecute(Move move) {
-		return move != null && move.getDestination().isInBounds() &&
-				move.getPiece().equals(this) && move.canExecute();
+		return move != null && move.getDestination().isInBounds()
+				&& move.getPiece().equals(this) && move.canExecute();
 	}
 
 	/**
@@ -251,22 +239,6 @@ abstract public class ChessPiece extends JComponent implements ChessPieces {
 		return String.valueOf(character);
 	}
 
-	public ChessPiece clone() {
-		if (this instanceof Bishop)
-			return new Bishop(board, color);
-		else if (this instanceof King)
-			return new King(board, color);
-		else if (this instanceof Knight)
-			return new Knight(board, color);
-		else if (this instanceof Pawn)
-			return new Pawn(board, color);
-		else if (this instanceof Queen)
-			return new Queen(board, color);
-		else if (this instanceof Rook)
-			return new Rook(board, color);
-		throw new NullPointerException("Weird piece...");
-	}
-
 	/**
 	 * A mutator method for ID. Only used when converting a chess board from
 	 * file.
@@ -277,5 +249,4 @@ abstract public class ChessPiece extends JComponent implements ChessPieces {
 	protected void setID(int ID) {
 		this.ID = ID;
 	}
-
 }

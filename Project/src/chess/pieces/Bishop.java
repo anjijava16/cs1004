@@ -16,8 +16,8 @@ public class Bishop extends ChessPiece {
 	public Bishop(ChessBoard board, Color color) {
 		super(board, color);
 		character = color == Color.WHITE ? WHITE_BISHOP : BLACK_BISHOP;
-		UTF8Character =
-				color == Color.WHITE ? UTF8_WHITE_BISHOP : UTF8_BLACK_BISHOP;
+		UTF8Character = color == Color.WHITE ? UTF8_WHITE_BISHOP
+				: UTF8_BLACK_BISHOP;
 		value = BISHOP_VALUE;
 	}
 
@@ -65,15 +65,15 @@ public class Bishop extends ChessPiece {
 				break;
 		}
 
+		// Add the possible moves of capture.
+		moves.addAll(getCaptures());
+
 		// Remove all invalid moves
 		for (int i = 0; i < moves.size(); i++)
 			if (moves.get(i).causesCheck()) {
 				moves.remove(i);
 				i--;
 			}
-
-		// Add the possible moves of capture.
-		moves.addAll(getCaptures());
 
 		return moves;
 	}

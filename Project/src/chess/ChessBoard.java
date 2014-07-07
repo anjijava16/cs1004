@@ -6,7 +6,6 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Toolkit;
 import java.util.ArrayList;
-import java.util.NoSuchElementException;
 
 import javax.swing.JComponent;
 
@@ -298,7 +297,7 @@ public class ChessBoard extends JComponent implements ChessPieces, ColumbiaBlue 
 		for (int i = 0; i < 8; i++)
 			for (int j = 0; j < 8; j++)
 				if (pieces[i][j] != null &&
-				pieces[i][j].getColor().equals(color))
+						pieces[i][j].getColor().equals(color))
 					chessPieces.add(pieces[i][j]);
 		return chessPieces;
 	}
@@ -345,13 +344,11 @@ public class ChessBoard extends JComponent implements ChessPieces, ColumbiaBlue 
 	 */
 	public Position getPositionOf(ChessPiece piece) {
 		for (int i = 0; i < 8; i++)
-			for (int j = 0; j < 8; j++) {
+			for (int j = 0; j < 8; j++)
 				if (pieces[i][j] != null)
 					if (pieces[i][j].equals(piece))
 						return new Position(i + 1, j + 1);
-			}
-		throw new NoSuchElementException("The chess piece " + piece +
-				" with ID " + piece.getID() + " does not exist.");
+		return null;
 	}
 
 	/**
@@ -401,9 +398,9 @@ public class ChessBoard extends JComponent implements ChessPieces, ColumbiaBlue 
 				if (move.isEnPassante()) {
 					g.fillOval(
 							SQUARE_SIZE * (end.getFile() - 1) + SQUARE_SIZE /
-							2 - SQUARE_SIZE / 10,
+									2 - SQUARE_SIZE / 10,
 							SQUARE_SIZE * (2 * 4 - end.getRank()) +
-							SQUARE_SIZE / 2 - SQUARE_SIZE / 10,
+									SQUARE_SIZE / 2 - SQUARE_SIZE / 10,
 							SQUARE_SIZE / 5,
 							SQUARE_SIZE / 5);
 					if (move.getPiece().getColor().equals(WHITE))
@@ -467,10 +464,10 @@ public class ChessBoard extends JComponent implements ChessPieces, ColumbiaBlue 
 			for (int j = 0; j < 8; j++)
 				if (pieces[i][j] == null)
 					if (i != 0 && '1' <= text.charAt(text.length() - 1) &&
-					text.charAt(text.length() - 1) <= '7')
+							text.charAt(text.length() - 1) <= '7')
 						text =
-						text.substring(0, text.length() - 1) +
-						(char) (text.charAt(text.length() - 1) + 1);
+								text.substring(0, text.length() - 1) +
+										(char) (text.charAt(text.length() - 1) + 1);
 					else
 						text += '1';
 				else
@@ -489,7 +486,6 @@ public class ChessBoard extends JComponent implements ChessPieces, ColumbiaBlue 
 		return text;
 	}
 
-	@Override
 	public String toString() {
 		String text = "";
 		for (int i = 7; i >= 0; i--) {
@@ -530,7 +526,9 @@ public class ChessBoard extends JComponent implements ChessPieces, ColumbiaBlue 
 		if (move.isKingCastle()) {
 			pieces[rank - 1][5] = pieces[rank - 1][7];
 			pieces[rank - 1][7] = null;
-			pieces[rank - 1][5].setPosition();
+			try {
+				pieces[rank - 1][5].setPosition();
+			} catch (NullPointerException npe) {}
 		}
 
 		// Update the chess board
@@ -550,7 +548,9 @@ public class ChessBoard extends JComponent implements ChessPieces, ColumbiaBlue 
 		pieces[rank - 1][file - 1] = promotedPiece;
 
 		// Initialize the promoted piece's position.
-		promotedPiece.setPosition();
+		try {
+			promotedPiece.setPosition();
+		} catch (NullPointerException npe) {}
 
 		// Update the chess board.
 		repaint();
@@ -565,7 +565,9 @@ public class ChessBoard extends JComponent implements ChessPieces, ColumbiaBlue 
 		if (move.isQueenCastle()) {
 			pieces[rank - 1][3] = pieces[rank - 1][0];
 			pieces[rank - 1][0] = null;
-			pieces[rank - 1][3].setPosition();
+			try {
+				pieces[rank - 1][3].setPosition();
+			} catch (NullPointerException npe) {}
 		}
 
 		// Update the chess board.
@@ -605,11 +607,37 @@ public class ChessBoard extends JComponent implements ChessPieces, ColumbiaBlue 
 		board.pieces[endRank - 1][endFile - 1] = piece;
 		board.pieces[endRank - 1][endFile - 1].setPosition();
 
-		// Set each piece's board to the given ChessBoard. TODO Make this work.
-		// for (int i = 0; i < 8; i++)
-		// for (int j = 0; j < 8; j++)
-		// if (board.pieces[i][j] != null)
-		// board.pieces[i][j].setBoard(board);
+		// Reset each piece (to sever all ties to this board).
+		// TODO Make this work.
+		int ID;
+		Color color;
+		for (int i = 0; i < 8; i++)
+			for (int j = 0; j < 8; j++) {
+				// To avoid a NullPointerException
+				if (board.pieces[i][j] == null)
+					continue;
+
+				ID = board.pieces[i][j].getID();
+				color = board.pieces[i][j].getColor();
+
+				// Reset the piece
+				if (board.pieces[i][j] instanceof Bishop)
+					board.pieces[i][j] = new Bishop(board, color);
+				else if (board.pieces[i][j] instanceof King)
+					board.pieces[i][j] = new King(board, color);
+				else if (board.pieces[i][j] instanceof Knight)
+					board.pieces[i][j] = new Knight(board, color);
+				else if (board.pieces[i][j] instanceof Pawn)
+					board.pieces[i][j] = new Pawn(board, color);
+				else if (board.pieces[i][j] instanceof Queen)
+					board.pieces[i][j] = new Queen(board, color);
+				else if (board.pieces[i][j] instanceof Rook)
+					board.pieces[i][j] = new Rook(board, color);
+
+				// Initialize the pieces.
+				board.pieces[i][j].setID(ID);
+				board.pieces[i][j].setPosition();
+			}
 
 		// Special moves
 		if (move.isEnPassante())

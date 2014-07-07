@@ -16,8 +16,8 @@ public class Rook extends ChessPiece {
 	public Rook(ChessBoard board, Color color) {
 		super(board, color);
 		character = color == Color.WHITE ? WHITE_ROOK : BLACK_ROOK;
-		UTF8Character =
-				color == Color.WHITE ? UTF8_WHITE_ROOK : UTF8_BLACK_ROOK;
+		UTF8Character = color == Color.WHITE ? UTF8_WHITE_ROOK
+				: UTF8_BLACK_ROOK;
 		value = ROOK_VALUE;
 	}
 
@@ -65,15 +65,15 @@ public class Rook extends ChessPiece {
 				break;
 		}
 
+		// Add the possible moves of capture.
+		moves.addAll(getCaptures());
+
 		// Remove all invalid moves
 		for (int i = 0; i < moves.size(); i++)
 			if (moves.get(i).causesCheck()) {
 				moves.remove(i);
 				i--;
 			}
-
-		// Add the possible moves of capture.
-		moves.addAll(getCaptures());
 
 		return moves;
 	}

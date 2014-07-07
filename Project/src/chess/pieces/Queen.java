@@ -16,8 +16,8 @@ public class Queen extends ChessPiece {
 	public Queen(ChessBoard board, Color color) {
 		super(board, color);
 		character = color == Color.WHITE ? WHITE_QUEEN : BLACK_QUEEN;
-		UTF8Character =
-				color == Color.WHITE ? UTF8_WHITE_QUEEN : UTF8_BLACK_QUEEN;
+		UTF8Character = color == Color.WHITE ? UTF8_WHITE_QUEEN
+				: UTF8_BLACK_QUEEN;
 		value = QUEEN_VALUE;
 	}
 
@@ -105,15 +105,15 @@ public class Queen extends ChessPiece {
 				break;
 		}
 
+		// Add the possible moves of capture.
+		moves.addAll(getCaptures());
+
 		// Remove all invalid moves
 		for (int i = 0; i < moves.size(); i++)
 			if (moves.get(i).causesCheck()) {
 				moves.remove(i);
 				i--;
 			}
-
-		// Add the possible moves of capture.
-		moves.addAll(getCaptures());
 
 		return moves;
 	}

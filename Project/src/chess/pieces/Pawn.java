@@ -16,8 +16,8 @@ public class Pawn extends ChessPiece {
 	public Pawn(ChessBoard board, Color color) {
 		super(board, color);
 		character = color == Color.WHITE ? WHITE_PAWN : BLACK_PAWN;
-		UTF8Character =
-				color == Color.WHITE ? UTF8_WHITE_PAWN : UTF8_BLACK_PAWN;
+		UTF8Character = color == Color.WHITE ? UTF8_WHITE_PAWN
+				: UTF8_BLACK_PAWN;
 		value = PAWN_VALUE;
 	}
 
@@ -55,15 +55,15 @@ public class Pawn extends ChessPiece {
 			}
 		}
 
+		// Add the possible moves of capture.
+		moves.addAll(getCaptures());
+
 		// Remove all invalid moves
 		for (int i = 0; i < moves.size(); i++)
 			if (moves.get(i).causesCheck()) {
 				moves.remove(i);
 				i--;
 			}
-
-		// Add the possible moves of capture.
-		moves.addAll(getCaptures());
 
 		return moves;
 	}
@@ -75,9 +75,9 @@ public class Pawn extends ChessPiece {
 		if (color == Color.WHITE) {
 			// To the right
 			temp = position.relative(1, 1);
-			if (board.getPieceAt(temp) != null &&
-					!board.getPieceAt(temp).getColor().equals(color) &&
-					temp.isInBounds())
+			if (board.getPieceAt(temp) != null
+					&& !board.getPieceAt(temp).getColor().equals(color)
+					&& temp.isInBounds())
 				if (temp.getRank() == 8)
 					captures.add(new Move(this, temp, Moves.CAPTURE, null));
 				else
@@ -85,9 +85,9 @@ public class Pawn extends ChessPiece {
 
 			// To the left
 			temp = position.relative(1, -1);
-			if (board.getPieceAt(temp) != null &&
-					!board.getPieceAt(temp).getColor().equals(color) &&
-					temp.isInBounds())
+			if (board.getPieceAt(temp) != null
+					&& !board.getPieceAt(temp).getColor().equals(color)
+					&& temp.isInBounds())
 				if (temp.getRank() == 8)
 					captures.add(new Move(this, temp, Moves.CAPTURE, null));
 				else
@@ -99,20 +99,20 @@ public class Pawn extends ChessPiece {
 				Move lastMove = moves.get(moves.size() - 1);
 				Position end = lastMove.getDestination();
 				temp = lastMove.getPosition().relative(-1, 0);
-				if (position.getRank() == 5 &&
-						lastMove.getPiece() instanceof Pawn &&
-						lastMove.getPosition().getRank() == 7 &&
-						end.getRank() == 5 && board.getPieceAt(end) != null &&
-						!board.getPieceAt(end).getColor().equals(color) &&
-						temp.isInBounds())
+				if (position.getRank() == 5
+						&& lastMove.getPiece() instanceof Pawn
+						&& lastMove.getPosition().getRank() == 7
+						&& end.getRank() == 5 && board.getPieceAt(end) != null
+						&& !board.getPieceAt(end).getColor().equals(color)
+						&& temp.isInBounds())
 					captures.add(new Move(this, temp, Moves.EN_PASSANTE));
 			}
 		} else if (color == Color.BLACK) {
 			// To the right
 			temp = position.relative(-1, 1);
-			if (board.getPieceAt(temp) != null &&
-					!board.getPieceAt(temp).getColor().equals(color) &&
-					temp.isInBounds())
+			if (board.getPieceAt(temp) != null
+					&& !board.getPieceAt(temp).getColor().equals(color)
+					&& temp.isInBounds())
 				if (temp.getRank() == 1)
 					captures.add(new Move(this, temp, Moves.CAPTURE, null));
 				else
@@ -120,9 +120,9 @@ public class Pawn extends ChessPiece {
 
 			// To the left
 			temp = position.relative(-1, -1);
-			if (board.getPieceAt(temp) != null &&
-					!board.getPieceAt(temp).getColor().equals(color) &&
-					temp.isInBounds())
+			if (board.getPieceAt(temp) != null
+					&& !board.getPieceAt(temp).getColor().equals(color)
+					&& temp.isInBounds())
 				if (temp.getRank() == 1)
 					captures.add(new Move(this, temp, Moves.CAPTURE, null));
 				else
@@ -134,12 +134,12 @@ public class Pawn extends ChessPiece {
 				Move lastMove = moves.get(moves.size() - 1);
 				Position end = lastMove.getDestination();
 				temp = lastMove.getPosition().relative(1, 0);
-				if (position.getRank() == 4 &&
-						lastMove.getPiece() instanceof Pawn &&
-						lastMove.getPosition().getRank() == 2 &&
-						end.getRank() == 4 && board.getPieceAt(end) != null &&
-						!board.getPieceAt(end).getColor().equals(color) &&
-						temp.isInBounds())
+				if (position.getRank() == 4
+						&& lastMove.getPiece() instanceof Pawn
+						&& lastMove.getPosition().getRank() == 2
+						&& end.getRank() == 4 && board.getPieceAt(end) != null
+						&& !board.getPieceAt(end).getColor().equals(color)
+						&& temp.isInBounds())
 					captures.add(new Move(this, temp, Moves.EN_PASSANTE));
 			}
 		}

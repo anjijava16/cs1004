@@ -16,8 +16,8 @@ public class Knight extends ChessPiece {
 	public Knight(ChessBoard board, Color color) {
 		super(board, color);
 		character = color == Color.WHITE ? WHITE_KNIGHT : BLACK_KNIGHT;
-		UTF8Character =
-				color == Color.WHITE ? UTF8_WHITE_KNIGHT : UTF8_BLACK_KNIGHT;
+		UTF8Character = color == Color.WHITE ? UTF8_WHITE_KNIGHT
+				: UTF8_BLACK_KNIGHT;
 		value = KNIGHT_VALUE;
 	}
 
@@ -40,15 +40,15 @@ public class Knight extends ChessPiece {
 				}
 		}
 
+		// Add the possible moves of capture.
+		moves.addAll(getCaptures());
+
 		// Remove all invalid moves
 		for (int i = 0; i < moves.size(); i++)
 			if (moves.get(i).causesCheck()) {
 				moves.remove(i);
 				i--;
 			}
-
-		// Add the possible moves of capture.
-		moves.addAll(getCaptures());
 
 		return moves;
 	}
@@ -61,21 +61,20 @@ public class Knight extends ChessPiece {
 		for (int i = -2; i <= 2; i++) { // Positive-Up-Right
 			if (i == 0)
 				continue;
-			for (int k = -1; k <= 1; k += 2) {
+			for (int k = -1; k <= 1; k += 2)
 				if (i == 2 || i == -2) { // Up-down
 					temp = position.relative(i, k);
-					if (board.getPieceAt(temp) != null &&
-							!board.getPieceAt(temp).getColor().equals(color) &&
-							temp.isInBounds())
+					if (board.getPieceAt(temp) != null
+							&& !board.getPieceAt(temp).getColor().equals(color)
+							&& temp.isInBounds())
 						captures.add(new Move(this, temp, Moves.CAPTURE));
 				} else { // Right-left
 					temp = position.relative(k, i * 2);
-					if (board.getPieceAt(temp) != null &&
-							!board.getPieceAt(temp).getColor().equals(color) &&
-							temp.isInBounds())
+					if (board.getPieceAt(temp) != null
+							&& !board.getPieceAt(temp).getColor().equals(color)
+							&& temp.isInBounds())
 						captures.add(new Move(this, temp, Moves.CAPTURE));
 				}
-			}
 		}
 		return captures;
 	}
@@ -87,7 +86,7 @@ public class Knight extends ChessPiece {
 		for (int i = -2; i <= 2; i++) { // Positive - Up or Right
 			if (i == 0)
 				continue;
-			for (int k = -1; k <= 1; k += 2) {
+			for (int k = -1; k <= 1; k += 2)
 				if (i % 2 == 0) { // Up-down
 					temp = position.relative(i, k);
 					if (temp.isInBounds())
@@ -97,7 +96,6 @@ public class Knight extends ChessPiece {
 					if (temp.isInBounds())
 						attacks.add(new Move(this, temp, Moves.THEORETICAL));
 				}
-			}
 		}
 
 		return attacks;
