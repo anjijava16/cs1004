@@ -410,11 +410,10 @@ public class ChessGame implements ColumbiaBlue {
 
 			writer.println(gameSetting);
 			writer.println(chessBoard.toSaveString());
-			for (Move move : moves) {
+			for (Move move : moves)
 				writer.print(move.getPiece().getID() + "|" +
 						move.getPosition() + move.getType() +
 						move.getDestination() + '\t');
-			}
 			writer.println();
 			writer.println(minimaxDepth);
 
@@ -487,7 +486,7 @@ public class ChessGame implements ColumbiaBlue {
 		} catch (IOException e) {}
 		for (int i = 0; i < newName.length(); i++)
 			if (newName.charAt(i) == '.')
-				return new File(newName.substring(i) + "." + extension);
+				return new File(newName.substring(0, i) + "." + extension);
 		return new File(newName + "." + extension);
 	}
 
@@ -696,6 +695,8 @@ public class ChessGame implements ColumbiaBlue {
 				frame.remove(playingOptionsPanel);
 				frame.pack();
 				gameSetting = 0;
+				frame.setTitle("New Game" + " - " +
+						settingsButtons[gameSetting].getText() + " (Edited)");
 				playerVsPlayer();
 			}
 		});
@@ -706,6 +707,8 @@ public class ChessGame implements ColumbiaBlue {
 				frame.remove(playingOptionsPanel);
 				frame.pack();
 				gameSetting = 1;
+				frame.setTitle("New Game" + " - " +
+						settingsButtons[gameSetting].getText() + " (Edited)");
 				playerVsComputer();
 			}
 		});
@@ -716,6 +719,8 @@ public class ChessGame implements ColumbiaBlue {
 				frame.remove(playingOptionsPanel);
 				frame.pack();
 				gameSetting = 2;
+				frame.setTitle("New Game" + " - " +
+						settingsButtons[gameSetting].getText() + " (Edited)");
 				computerVsComputer();
 			}
 		});
@@ -1048,7 +1053,15 @@ public class ChessGame implements ColumbiaBlue {
 		pcPlayGame();
 	}
 
+	/**
+	 * The to-be-executed move of the computer. Calculated while the user
+	 * thinks.
+	 */
+	private Move computerMove;
+
 	private void pcPlayGame() {
+		frame.repaint();
+		computerMove = minimax();
 		if (turn.equals(computerColor))
 			computerTurn();
 	}
@@ -1059,7 +1072,6 @@ public class ChessGame implements ColumbiaBlue {
 	 */
 	private void computerTurn() {
 		System.out.println("Computer's turn executing");
-		Move computerMove = minimax();
 
 		if (computerMove == null) {
 			// Make it so that the _user_ wins.
@@ -1080,6 +1092,7 @@ public class ChessGame implements ColumbiaBlue {
 			endGame();
 			return;
 		}
+		minimax();
 	}
 
 	/**
@@ -1123,8 +1136,19 @@ public class ChessGame implements ColumbiaBlue {
 	// return random(choices);
 	// }
 
-	private Move minimax() {
-		return minimax(chessBoard, null, minimaxDepth, true);
+	private synchronized Move minimax() {
+		// Create a new branch.
+		MinimaxBranch branch =
+				new MinimaxBranch(chessBoard, null, minimaxDepth, true);
+
+		// Set the optimal move.
+		branch.run();
+
+		// Wait until it's complete.
+		branch.lock.lock();
+
+		// Return the optimal move.
+		return branch.chosenMove;
 	}
 
 	/**
@@ -1143,153 +1167,149 @@ public class ChessGame implements ColumbiaBlue {
 	 * @return The optimal move for this player, after looking the given number
 	 *         of times ahead.
 	 */
-	private Move minimax(
-			ChessBoard node,
-			Move edge,
-			int depth,
-			boolean maximizingPlayer) {
-		if (edge != null)
-			edge.setScore();
-		{ // TODO Remove debugging block
-			for (int i = 0; i < minimaxDepth - depth; i++)
-				System.out.print("##");
-			if (edge != null)
-				System.out.println("Edge: " + edge);
-			for (int i = 0; i < minimaxDepth - depth; i++)
-				System.out.print("##");
-			if (edge != null)
-				System.out.println("Score: " + edge.getScore());
-			for (int i = 0; i < minimaxDepth - depth; i++)
-				System.out.print("##");
-			System.out.println("Depth: " + depth);
-			for (int i = 0; i < minimaxDepth - depth; i++)
-				System.out.print("##");
-			System.out.println("Node: \n" +
-					node.toIndentedString(2 * (minimaxDepth - depth)));
-		}
-
-		// If the depth is 0 or minimax is at a terminating node, return the
-		// last element in the edges vector, the heuristic value of the node.
-		if (depth == 0 || edge != null && edge.doesCheckMate())
-			return edge;
-
-		// The Move ArrayList that will contain all of the possible moves.
-		ArrayList<Move> allMoves = new ArrayList<Move>();
-
-		// The color of whichever player is calling this method.
-		Color callerColor = turn;
-		if (!maximizingPlayer)
-			callerColor = chessBoard.oppositeColor(turn);
-
-		// Get all of the possible moves.
-		for (ChessPiece piece : chessBoard.getPieces(callerColor))
-			allMoves.addAll(piece.getMoves());
-
-		{ // TODO Remove debugging block
-			for (int i = 0; i < minimaxDepth - depth; i++)
-				System.out.print("##");
-			System.out.println(allMoves.size() + " Possible Moves:");
-			for (Move move : allMoves) {
-				for (int i = 0; i < minimaxDepth - depth; i++)
-					System.out.print("##");
-				System.out.print("#");
-				System.out.println(move);
-			}
-		}
-
-		// What will be the possible optimal moves, looking depth steps ahead.
-		ArrayList<Move> choices = new ArrayList<Move>();
-		// The move after applying the minimax algorithm
-		Move minimax;
-		if (maximizingPlayer) {
-			// Set the moves' heuristic values after looking depth steps ahead
-			for (Move move : allMoves) {
-				// Get what the child node says is the optimal move, assuming
-				// the current edge is traveled down.
-
-				// Set the minimax move to what the child node says it will be.
-				minimax = minimax(
-				// The child node (the board with the move executed).
-						node.unreportedMove(move),
-						move,
-						depth - 1,
-						false);
-
-				minimax.setScore();
-
-				// Max score for other player.
-				int maxScoreForThisPlayer = 0;
-
-				// Maximize the scores in the choices vector
-				if (maxScoreForThisPlayer < minimax.getScore()) {
-					maxScoreForThisPlayer = minimax.getScore();
-					continue;
-				}
-
-				move.addScore(maxScoreForThisPlayer);
-			}
-
-			// Choose a possible move among the choices
-			for (Move move : allMoves)
-				if (choices.size() == 0)
-					choices.add(move);
-				else if (choices.get(0).getScore() < move.getScore()) {
-					choices.clear();
-					choices.add(move);
-				} else if (choices.get(0).getScore() == move.getScore())
-					choices.add(move);
-		} else {
-			// Set the moves' heuristic values after looking depth steps ahead
-			for (Move move : allMoves) {
-				// Get what the child node says is the optimal move, assuming
-				// the current edge is traveled down.
-
-				// Set the minimax move to what the child node says it will be.
-				minimax = minimax(
-				// The child node (the board with the move executed).
-						node.unreportedMove(move),
-						move,
-						depth - 1,
-						true);
-
-				minimax.setScore();
-
-				// Max score for other player.
-				int maxScoreForOtherPlayer = 0;
-
-				// Maximize the scores in the choices vector
-				if (maxScoreForOtherPlayer > minimax.getScore()) {
-					maxScoreForOtherPlayer = minimax.getScore();
-					continue;
-				}
-
-				move.addScore(-1 * maxScoreForOtherPlayer);
-			}
-
-			for (Move move : allMoves)
-				if (choices.size() == 0)
-					choices.add(move);
-				else if (choices.get(0).getScore() > move.getScore()) {
-					choices.clear();
-					choices.add(move);
-				} else if (choices.get(0).getScore() == move.getScore())
-					choices.add(move);
-		}
-
-		// Return an optimal move, after looking ahead depth steps.
-		{ // TODO Remove debugging block
-			for (int i = 0; i < minimaxDepth - depth; i++)
-				System.out.print("##");
-			System.out.println("Choices: ");
-			for (int i = 0; i < choices.size(); i++)
-				System.out.println(choices.get(i));
-		}
-		return random(choices);
-	}
-
-	private Move random(ArrayList<Move> moves) {
-		return moves.get((int) (Math.random() * moves.size()));
-	}
+	// private Move minimax(
+	// ChessBoard node,
+	// Move edge,
+	// int depth,
+	// boolean maximizingPlayer) {
+	// if (edge != null)
+	// edge.setScore();
+	// { // TODO Remove debugging block
+	// for (int i = 0; i < minimaxDepth - depth; i++)
+	// System.out.print("##");
+	// if (edge != null)
+	// System.out.println("Edge: " + edge);
+	// for (int i = 0; i < minimaxDepth - depth; i++)
+	// System.out.print("##");
+	// if (edge != null)
+	// System.out.println("Score: " + edge.getScore());
+	// for (int i = 0; i < minimaxDepth - depth; i++)
+	// System.out.print("##");
+	// System.out.println("Depth: " + depth);
+	// for (int i = 0; i < minimaxDepth - depth; i++)
+	// System.out.print("##");
+	// System.out.println("Node: \n" +
+	// node.toIndentedString(2 * (minimaxDepth - depth)));
+	// }
+	//
+	// // If the depth is 0 or minimax is at a terminating node, return the
+	// // last element in the edges vector, the heuristic value of the node.
+	// if (depth == 0 || edge != null && edge.doesCheckMate())
+	// return edge;
+	//
+	// // The Move ArrayList that will contain all of the possible moves.
+	// ArrayList<Move> allMoves = new ArrayList<Move>();
+	//
+	// // The color of whichever player is calling this method.
+	// Color callerColor = turn;
+	// if (!maximizingPlayer)
+	// callerColor = chessBoard.oppositeColor(turn);
+	//
+	// // Get all of the possible moves.
+	// for (ChessPiece piece : chessBoard.getPieces(callerColor))
+	// allMoves.addAll(piece.getMoves());
+	//
+	// { // TODO Remove debugging block
+	// for (int i = 0; i < minimaxDepth - depth; i++)
+	// System.out.print("##");
+	// System.out.println(allMoves.size() + " Possible Moves:");
+	// for (Move move : allMoves) {
+	// for (int i = 0; i < minimaxDepth - depth; i++)
+	// System.out.print("##");
+	// System.out.print("#");
+	// System.out.println(move);
+	// }
+	// }
+	//
+	// // What will be the possible optimal moves, looking depth steps ahead.
+	// ArrayList<Move> choices = new ArrayList<Move>();
+	// // The move after applying the minimax algorithm
+	// Move minimax;
+	// if (maximizingPlayer) {
+	// // Set the moves' heuristic values after looking depth steps ahead
+	// for (Move move : allMoves) {
+	// // Get what the child node says is the optimal move, assuming
+	// // the current edge is traveled down.
+	//
+	// // Set the minimax move to what the child node says it will be.
+	// minimax = minimax(
+	// // The child node (the board with the move executed).
+	// node.unreportedMove(move),
+	// move,
+	// depth - 1,
+	// false);
+	//
+	// minimax.setScore();
+	//
+	// // Max score for other player.
+	// int maxScoreForThisPlayer = 0;
+	//
+	// // Maximize the scores in the choices vector
+	// if (maxScoreForThisPlayer < minimax.getScore()) {
+	// maxScoreForThisPlayer = minimax.getScore();
+	// continue;
+	// }
+	//
+	// move.addScore(maxScoreForThisPlayer);
+	// }
+	//
+	// // Choose a possible move among the choices
+	// for (Move move : allMoves)
+	// if (choices.size() == 0)
+	// choices.add(move);
+	// else if (choices.get(0).getScore() < move.getScore()) {
+	// choices.clear();
+	// choices.add(move);
+	// } else if (choices.get(0).getScore() == move.getScore())
+	// choices.add(move);
+	// } else {
+	// // Set the moves' heuristic values after looking depth steps ahead
+	// for (Move move : allMoves) {
+	// // Get what the child node says is the optimal move, assuming
+	// // the current edge is traveled down.
+	//
+	// // Set the minimax move to what the child node says it will be.
+	// minimax = minimax(
+	// // The child node (the board with the move executed).
+	// node.unreportedMove(move),
+	// move,
+	// depth - 1,
+	// true);
+	//
+	// minimax.setScore();
+	//
+	// // Max score for other player.
+	// int maxScoreForOtherPlayer = 0;
+	//
+	// // Maximize the scores in the choices vector
+	// if (maxScoreForOtherPlayer > minimax.getScore()) {
+	// maxScoreForOtherPlayer = minimax.getScore();
+	// continue;
+	// }
+	//
+	// move.addScore(-1 * maxScoreForOtherPlayer);
+	// }
+	//
+	// for (Move move : allMoves)
+	// if (choices.size() == 0)
+	// choices.add(move);
+	// else if (choices.get(0).getScore() > move.getScore()) {
+	// choices.clear();
+	// choices.add(move);
+	// } else if (choices.get(0).getScore() == move.getScore())
+	// choices.add(move);
+	// }
+	//
+	// // Return an optimal move, after looking ahead depth steps.
+	// { // TODO Remove debugging block
+	// for (int i = 0; i < minimaxDepth - depth; i++)
+	// System.out.print("##");
+	// System.out.println("Choices: ");
+	// for (int i = 0; i < choices.size(); i++)
+	// System.out.println(choices.get(i));
+	// }
+	// return choices.get((int) (Math.random() * choices.size()));
+	// }
 
 	private void computerVsComputer() {
 		// Enable save, view game log, show moves.
@@ -1304,11 +1324,9 @@ public class ChessGame implements ColumbiaBlue {
 	 */
 	private void endGame() {
 		chessBoard.setEnabled(false);
-		String saveFileName;
+		String saveFileName = "";
 		if (saveFile != null)
 			saveFileName = saveFile.getName();
-		else
-			saveFileName = "";
 		String saveName;
 		try {
 			saveName = saveFileName.substring(0, saveFileName.length() - 4);
@@ -1392,20 +1410,20 @@ public class ChessGame implements ColumbiaBlue {
 	}
 
 	/**
-	 * Adds the given move to the moves vector.
+	 * Adds the given move to the moves ArrayList.
 	 *
 	 * @param move
 	 *            A given move.
 	 */
 	protected void addMove(Move move) {
 		// Reset the frame title, if necessary.
+		String saveName = "New Game";
 		if (saveFile != null) {
-			String saveFileName = saveFile.getName();
-			frame.setTitle(saveFileName.substring(0, saveFileName.length() - 4) +
-					" - " +
-					settingsButtons[gameSetting].getText() +
-					" (Edited)");
+			saveName = saveFile.getName();
+			saveName.substring(0, saveName.length() - 4);
 		}
+		frame.setTitle(saveName + " - " +
+				settingsButtons[gameSetting].getText() + " (Edited)");
 
 		// Set the move ID so that the program knows it has been executed.
 		move.setID(moves.size());

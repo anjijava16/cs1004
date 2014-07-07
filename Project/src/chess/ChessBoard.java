@@ -163,12 +163,12 @@ public class ChessBoard extends JComponent implements ChessPieces, ColumbiaBlue 
 	/**
 	 * The white pieces' actual displayed color.
 	 */
-	protected final Color WHITE = Color.WHITE;
+	public final Color WHITE = Color.WHITE;
 
 	/**
 	 * The black pieces' actual displayed color.
 	 */
-	protected final Color BLACK = Color.BLACK;
+	public final Color BLACK = Color.BLACK;
 
 	private ChessBoard(ChessBoard chessBoard) {
 		super();
@@ -243,10 +243,6 @@ public class ChessBoard extends JComponent implements ChessPieces, ColumbiaBlue 
 	 *            A given move.
 	 */
 	public void execute(Move move) {
-		// Update the moves log.
-		game.addMove(move);
-		game.gameLog.update(game.getMoves());
-
 		ChessPiece piece = move.getPiece();
 		Position position = move.getPosition();
 		Position destination = move.getDestination();
@@ -267,6 +263,10 @@ public class ChessBoard extends JComponent implements ChessPieces, ColumbiaBlue 
 
 		// Update the displayed board.
 		repaint();
+
+		// Update the moves log.
+		game.addMove(move);
+		game.gameLog.update(game.getMoves());
 	}
 
 	/**
@@ -309,6 +309,42 @@ public class ChessBoard extends JComponent implements ChessPieces, ColumbiaBlue 
 	 */
 	public ChessGame getGame() {
 		return game;
+	}
+
+	/**
+	 * Undoes the given move.
+	 *
+	 * @param move
+	 *            A given move.
+	 * @return Whether it is possible to undo the move.
+	 */
+	protected boolean undoMove(Move move) {
+		ArrayList<Move> moves = game.getMoves();
+		if (!moves.get(moves.size() - 1).equals(move))
+			return false;
+
+		// Move the pieces
+		ChessPiece piece = move.getPiece();
+		int beginRank = move.getPosition().getRank();
+		int beginFile = move.getPosition().getFile();
+		int endRank = move.getDestination().getRank();
+		int endFile = move.getDestination().getFile();
+		pieces[beginRank - 1][beginFile - 1] = piece;
+		pieces[endRank - 1][endFile - 1] = null;
+
+		// Special moves
+		if (move.isEnPassante())
+			pieces[beginRank - 1][endFile - 1] = move.getCapturedPiece();
+		else if (move.isCapture())
+			pieces[endRank - 1][endFile - 1] = move.getCapturedPiece();
+		else if (move.isKingCastle())
+			pieces[endRank - 1][7] = move.getCastledRook();
+		else if (move.isQueenCastle())
+			pieces[endRank - 1][0] = move.getCastledRook();
+		else if (move.isInvalid())
+			return false;
+
+		return true;
 	}
 
 	/**

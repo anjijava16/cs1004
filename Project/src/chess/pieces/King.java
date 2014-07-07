@@ -16,8 +16,8 @@ public class King extends ChessPiece {
 	public King(ChessBoard board, Color color) {
 		super(board, color);
 		character = color == Color.WHITE ? WHITE_KING : BLACK_KING;
-		UTF8Character = color == Color.WHITE ? UTF8_WHITE_KING
-				: UTF8_BLACK_KING;
+		UTF8Character =
+				color == Color.WHITE ? UTF8_WHITE_KING : UTF8_BLACK_KING;
 		value = KING_VALUE;
 	}
 
@@ -36,37 +36,43 @@ public class King extends ChessPiece {
 		// Check to see if the king can castle. King can't have moved, and
 		// chosen rook can't have moved.
 		if (!beenMoved(this) && !isChecked())
-			if (color.equals(Color.WHITE)) {
+			if (color.equals(board.WHITE)) {
 				// Castle on the king's side.
 				temp = new Position(1, 7);
-				if (!beenMoved(board.getPieceAt(temp.relative(0, 1)))
-						&& board.getPieceAt(temp) == null
-						&& board.getPieceAt(temp.relative(0, -1)) == null
-						&& !isPositionAttacked(position))
+				if (!beenMoved(board.getPieceAt(temp.relative(0, 1))) &&
+						board.getPieceAt(temp) == null &&
+						board.getPieceAt(temp.relative(0, -1)) == null &&
+						!isPositionAttacked(position) &&
+						!isPositionAttacked(position.relative(0, 1)))
 					moves.add(new Move(this, temp, Moves.KING_CASTLE));
 
 				// Castle on the queen's side.
 				temp = new Position(1, 3);
-				if (!beenMoved(board.getPieceAt(temp.relative(0, -2)))
-						&& board.getPieceAt(temp.relative(0, -1)) == null
-						&& board.getPieceAt(temp) == null
-						&& board.getPieceAt(temp.relative(0, 1)) == null
-						&& !isPositionAttacked(position))
+				if (!beenMoved(board.getPieceAt(temp.relative(0, -2))) &&
+						board.getPieceAt(temp.relative(0, -1)) == null &&
+						board.getPieceAt(temp) == null &&
+						board.getPieceAt(temp.relative(0, 1)) == null &&
+						!isPositionAttacked(position) &&
+						!isPositionAttacked(position.relative(0, -1)))
 					moves.add(new Move(this, temp, Moves.QUEEN_CASTLE));
-			} else if (color.equals(Color.BLACK)) {
+			} else if (color.equals(board.BLACK)) {
 				// Castle on the king's side.
 				temp = new Position(8, 7);
-				if (!beenMoved(board.getPieceAt(temp.relative(0, 1)))
-						&& board.getPieceAt(temp) == null
-						&& board.getPieceAt(temp.relative(0, -1)) == null)
+				if (!beenMoved(board.getPieceAt(temp.relative(0, 1))) &&
+						board.getPieceAt(temp) == null &&
+						board.getPieceAt(temp.relative(0, -1)) == null &&
+						!isPositionAttacked(position) &&
+						!isPositionAttacked(position.relative(0, 1)))
 					moves.add(new Move(this, temp, Moves.KING_CASTLE));
 
 				// Castle on the queen's side.
 				temp = new Position(8, 3);
-				if (!beenMoved(board.getPieceAt(temp.relative(0, -2)))
-						&& board.getPieceAt(temp.relative(0, -1)) == null
-						&& board.getPieceAt(temp) == null
-						&& board.getPieceAt(temp.relative(0, 1)) == null)
+				if (!beenMoved(board.getPieceAt(temp.relative(0, -2))) &&
+						board.getPieceAt(temp.relative(0, -1)) == null &&
+						board.getPieceAt(temp) == null &&
+						board.getPieceAt(temp.relative(0, 1)) == null &&
+						!isPositionAttacked(position) &&
+						!isPositionAttacked(position.relative(0, -1)))
 					moves.add(new Move(this, temp, Moves.QUEEN_CASTLE));
 			}
 
@@ -91,9 +97,9 @@ public class King extends ChessPiece {
 		for (int i = -1; i <= 1; i++)
 			for (int j = -1; j <= 1; j++) {
 				temp = position.relative(i, j);
-				if (board.getPieceAt(temp) != null
-						&& !board.getPieceAt(temp).getColor().equals(color)
-						&& temp.isInBounds())
+				if (board.getPieceAt(temp) != null &&
+						!board.getPieceAt(temp).getColor().equals(color) &&
+						temp.isInBounds())
 					captures.add(new Move(this, temp, Moves.CAPTURE));
 			}
 
@@ -121,8 +127,8 @@ public class King extends ChessPiece {
 	 * @return Whether a given position is attacked.
 	 */
 	private boolean isPositionAttacked(Position position) {
-		ArrayList<ChessPiece> opponentPieces = board.getPieces(board
-				.oppositeColor(color));
+		ArrayList<ChessPiece> opponentPieces =
+				board.getPieces(board.oppositeColor(color));
 		ArrayList<Move> allMoves = new ArrayList<Move>();
 
 		// Set the allMoves vector.
@@ -149,8 +155,8 @@ public class King extends ChessPiece {
 
 		// Check all of the game's previous moves.
 		for (Move move : board.getGame().getMoves())
-			if (piece.equals(move.getPiece())
-					|| piece.equals(move.getCastledRook()))
+			if (piece.equals(move.getPiece()) ||
+					piece.equals(move.getCastledRook()))
 				return true;
 
 		// If not, it hasn't been moved.
@@ -169,14 +175,14 @@ public class King extends ChessPiece {
 	 */
 	public boolean isDoubleChecked() {
 		// Set the allOpponentMoves vector.
-		ArrayList<Move> allOpponentMoves = new ArrayList<Move>();
+		ArrayList<Move> allOpponentAttacks = new ArrayList<Move>();
 		for (ChessPiece piece : board.getPieces(board.oppositeColor(color)))
-			allOpponentMoves.addAll(piece.getAttacks());
+			allOpponentAttacks.addAll(piece.getAttacks());
 
 		// If any moves end at this position, increment the number of checks.
 		int checks = 0;
-		for (Move move : allOpponentMoves)
-			if (move.getDestination().equals(position))
+		for (Move attack : allOpponentAttacks)
+			if (attack.getDestination().equals(position))
 				checks++;
 
 		return checks == 2;

@@ -84,14 +84,18 @@ abstract public class ChessPiece extends JComponent implements ChessPieces {
 		g.setColor(color);
 		if (equals(board.getSelectedPiece())) {
 			g.setFont(ChessBoard.FONT);
-			g.drawChars(array, 0, 1, board.getGame().getMouseX()
-					- ChessBoard.SQUARE_SIZE / 2, board.getGame().getMouseY()
-					- ChessBoard.SQUARE_SIZE / 2);
+			g.drawChars(array, 0, 1, board.getGame().getMouseX() -
+					ChessBoard.SQUARE_SIZE / 2, board.getGame().getMouseY() -
+					ChessBoard.SQUARE_SIZE / 2);
 		} else
-			g.drawChars(array, 0, 1,
+			g.drawChars(
+					array,
+					0,
+					1,
 					ChessBoard.SQUARE_SIZE * (position.getFile() - 1),
-					ChessBoard.SQUARE_SIZE * (2 * 4 - (position.getRank() - 1))
-							- ChessBoard.OFFSET_CORRECTION);
+					ChessBoard.SQUARE_SIZE *
+							(2 * 4 - (position.getRank() - 1)) -
+							ChessBoard.OFFSET_CORRECTION);
 	}
 
 	public void paint(Graphics g) {
@@ -100,8 +104,8 @@ abstract public class ChessPiece extends JComponent implements ChessPieces {
 
 		ChessBoard.SQUARE_SIZE * (position.getFile() - 1),
 
-		ChessBoard.SQUARE_SIZE * (2 * 4 - (position.getRank() - 1))
-				- ChessBoard.OFFSET_CORRECTION);
+		ChessBoard.SQUARE_SIZE * (2 * 4 - (position.getRank() - 1)) -
+				ChessBoard.OFFSET_CORRECTION);
 	}
 
 	/**
@@ -186,7 +190,10 @@ abstract public class ChessPiece extends JComponent implements ChessPieces {
 			}
 
 		// Execute the move, if possible, and return true, and otherwise false.
-		if (move != null && move.execute())
+		if (move != null && move.isPromotion()) {
+			move.setPromotedPiece(board.getGame().getPromotedPieceFromUser());
+			return true;
+		} else if (move != null && move.execute())
 			return true;
 		else
 			return false;
@@ -198,8 +205,8 @@ abstract public class ChessPiece extends JComponent implements ChessPieces {
 	 * @return Whether this piece can execute the given move..
 	 */
 	public boolean canExecute(Move move) {
-		return move != null && move.getDestination().isInBounds()
-				&& move.getPiece().equals(this) && move.canExecute();
+		return move != null && move.getDestination().isInBounds() &&
+				move.getPiece().equals(this) && move.canExecute();
 	}
 
 	/**

@@ -1,7 +1,6 @@
 package chess;
 
 import java.awt.Color;
-import java.util.ArrayList;
 
 import chess.pieces.King;
 import chess.pieces.Pawn;
@@ -133,18 +132,20 @@ public class Move implements Moves {
 	 */
 	public void setModifier() {
 		Color oppositeColor = piece.board.oppositeColor(piece.getColor());
-		ChessBoard chessBoard = piece.board.unreportedMove(this);
 
-		King opponentKing = chessBoard.getKing(oppositeColor);
+		// The opponent king
+		King king = piece.board.unreportedMove(this).getKing(oppositeColor);
 
-		if (opponentKing == null)
+		if (king == null)
 			modifier = NONE;
-		else if (opponentKing.isChecked())
-			modifier = CHECK;
-		else if (opponentKing.isDoubleChecked())
-			modifier = DOUBLE_CHECK;
-		else if (opponentKing.isCheckMated())
+		else if (king.isCheckMated())
 			modifier = CHECKMATE;
+		else if (king.isDoubleChecked())
+			modifier = DOUBLE_CHECK;
+		else if (king.isChecked())
+			modifier = CHECK;
+		else
+			modifier = NONE;
 	}
 
 	/**
@@ -159,10 +160,20 @@ public class Move implements Moves {
 	/**
 	 * Accessor method for promotedPiece.
 	 *
-	 * @return The piece that is being promoted, if any.
+	 * @return The piece to be promoted, if any.
 	 */
 	public ChessPiece getPromotedPiece() {
 		return promotedPiece;
+	}
+
+	/**
+	 * Mutator method for promotedPiece.
+	 *
+	 * @param promotedPiece
+	 *            The piece to be promoted.
+	 */
+	protected void setPromotedPiece(ChessPiece promotedPiece) {
+		this.promotedPiece = promotedPiece;
 	}
 
 	/**
@@ -186,10 +197,19 @@ public class Move implements Moves {
 	/**
 	 * Accessor method for castledRook.
 	 *
-	 * @return The rook being castled in this move.
+	 * @return The rook being castled in this move, if any.
 	 */
 	public Rook getCastledRook() {
 		return castledRook;
+	}
+
+	/**
+	 * Accessor method for capturedPiece.
+	 *
+	 * @return The piece being captured in this move, if any.
+	 */
+	public ChessPiece getCapturedPiece() {
+		return capturedPiece;
 	}
 
 	/**
@@ -285,7 +305,6 @@ public class Move implements Moves {
 	 * @return Whether this move will check the opponent.
 	 */
 	public boolean doesCheck() {
-		setModifier();
 		return modifier.equals(CHECK) || modifier.equals(DOUBLE_CHECK);
 	}
 
@@ -293,7 +312,6 @@ public class Move implements Moves {
 	 * @return Whether this move will double check the opponent.
 	 */
 	public boolean doesDoubleCheck() {
-		setModifier();
 		return modifier.equals(DOUBLE_CHECK);
 	}
 
@@ -301,7 +319,6 @@ public class Move implements Moves {
 	 * @return Whether this move will checkmate the opponent.
 	 */
 	public boolean doesCheckMate() {
-		setModifier();
 		return modifier.equals(CHECKMATE);
 	}
 
@@ -320,13 +337,11 @@ public class Move implements Moves {
 	/**
 	 * Undoes this move if this move is the last move executed in the chess
 	 * game.
-	 * 
+	 *
 	 * @return Whether this move is the last move executed.
 	 */
 	protected boolean undo() {
-		ArrayList<Move> moves = piece.board.getGame().getMoves();
-		if (!moves.get(moves.size() - 1).equals(this))
-			return false;
+		piece.board.undoMove(this);
 		return true;
 	}
 
@@ -398,22 +413,19 @@ public class Move implements Moves {
 			message += type;
 			message += capturedPiece;
 			message += destination;
-		} else if (isKingCastle()) {
+		} else if (isKingCastle())
 			message = "0 - 0";
-		} else if (isQueenCastle()) {
+		else if (isQueenCastle())
 			message = "0 - 0 - 0";
-		} else if (isInvalid()) {
+		else if (isInvalid())
 			message += type;
-		} else { // Just a regular move.
+		else { // Just a regular move.
 			message += piece;
 			message += position;
 			message += type;
 			message += destination;
 		}
 
-		// Set the modifier to whatever it should be.
-		// if (modifier == NONE)
-		// setModifier();
 		message += modifier;
 		return message;
 	}
@@ -423,39 +435,33 @@ public class Move implements Moves {
 	 */
 	public String toGameLogString() {
 		String message = "";
-		if (isEnPassante()) {
+
+		// The moved piece
+		if (!piece.getUTF8Char().toUpperCase().equals("P"))
 			message += piece.getUTF8Char().toUpperCase();
-			message += position;
-			message += type + " ";
-			message += capturedPiece.getUTF8Char().toUpperCase();
+
+		// The piece's position
+		message += position;
+
+		// The type = move
+		message += type;
+		// The type of move
+		if (isEnPassante()) {
+			message += " ";
 			message += destination;
 		} else if (isPromotion()) {
-			message += piece.getUTF8Char();
-			message += position;
-			message += type;
 			message += destination;
 			message += "=" + promotedPiece;
-		} else if (isCapture()) {
-			message += piece.getUTF8Char().toUpperCase();
-			message += position;
-			message += type;
-			message += capturedPiece.getUTF8Char().toUpperCase();
+		} else if (isCapture())
 			message += destination;
-		} else if (isKingCastle()) {
+		else if (isKingCastle())
 			message = "0 - 0";
-		} else if (isQueenCastle()) {
+		else if (isQueenCastle())
 			message = "0 - 0 - 0";
-		} else if (isInvalid()) {
-			message += type;
-		} else { // Just a regular move.
-			message += piece.getUTF8Char();
-			message += position;
-			message += type;
+		else if (isInvalid())
 			message += destination;
-		}
-
-		// Set the modifier to whatever it should be.
-		setModifier();
+		else
+			message += destination;
 
 		// Add on the modifier
 		message += modifier;
