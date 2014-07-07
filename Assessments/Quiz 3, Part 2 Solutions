@@ -1,0 +1,15 @@
+Name: Kai-Zhan Lee
+UNI: kl2792
+Quiz 3, Part II
+
+1. Church-Turing Thesis: The Church-Turing thesis is a thesis that says that any computation in real-life can be converted into a Turing machine that does the same computation. (Source: http://mathworld.wolfram.com/Church-TuringThesis.html)
+2. DNS: DNS stands for domain name server. It is the system that translates Internet addresses to machine addresses (i.e. numeric addresses), which computers can use. (Source: http://en.wikipedia.org/wiki/DNS)
+3. Ethernet: Ethernet is a system that connects a group of computer systems to make a local area network (LAN). It has certain protocols to manage the transfer of information and avoid simultaneous transmission. (Source: http://en.wikipedia.org/wiki/Ethernet)
+4. FLOPS: FLOPS stands for floating point operations per second. It can be used as a measure of computer efficiency. (Source: http://en.wikipedia.org/wiki/FLOPS)
+5. I/O buffer: An I/O buffer is a piece of physical memory that catalyzes the transfer of information between two devices (it compensates for the different rates of information output/intake). (Source: http://www.encyclopedia.com/doc/1O11-IObuffering.html, http://en.wikipedia.org/wiki/Data_buffer)
+6. I/O controller: An I/O controller is a piece of hardware that controls the transfer of information between a device and the computer. (Source: http://www.computerhope.com/jargon/i/iocont.htm)
+7. Instruction Register: An instruction register is a piece of hardware in the CPU that stores the instruction currently being interpreted or executed. (Source: http://en.wikipedia.org/wiki/Instruction_register)
+8. Instruction Set: An instruction set is the part of the computer's memory architecture related to programming; it stores the native data types, instructions, registers, addressing modes, memory architecture, interrupt and exception handling, and external I/O (everything necessary for programming). It includes the converted form of the program's language, machine language, and the native commands used by a given processor. (Source: http://en.wikipedia.org/wiki/Instruction_set)
+9. MAC address: A MAC address, a media access control address, is a unique address assigned to all network interfaces so that communication is possible. (Source: http://en.wikipedia.org/wiki/MAC_address)
+10. Machine language: Machine language is a very basic set of instructions that the given computer's CPU can directly execute. (Source: http://en.wikipedia.org/wiki/Machine_code)
+11. Op Code: An opcode part of a machine language instruction that specifies the operation to be performed. The opcodes of different computers are different. (Source:http://en.wikipedia.org/wiki/Opcode)

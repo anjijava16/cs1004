@@ -1,0 +1,68 @@
+I.
+What is a parameter?
+	'Parameter' can refer to either the variable or the value that a method takes in.
+What does it mean for something to be parameterized?
+	Parameterization is the conversion of something into a parameter (i.e. putting a value/variable into a method).
+Define and explain the difference between:
+	Formal parameters: The variables that a method takes in.
+	Actual parameters: The values that a method takes in.
+	Arguments: a variable used to determine what a method does.
+Define and explain the difference between:
+	A compiler: In terms of Java, this is a program that converts Java syntax into byte code.
+	An interpreter: In terms of Java, this is a program that reads the byte code and does the according actions.
+Define and explain the difference between: 
+	A constructor: This returns an instance of its class with its variables set so that the object is usable.
+	An instance method: A method that can only be used by instances of the class. Generally, instance methods somehow affect instance variables.
+	A static method: A method that belongs to the entire class and can be used by anything to which the class is visible. Generally, static methods affect static variables or serve as helper methods.
+II.
+Define and explain the difference between: 
+	A static variable: A static variable is a unique variable that belongs to the entire class.
+	An instance variable: An instance variable is not necessarily unique. Each instance of the class possesses one of these variables.
+	A local variable: A local variable is a variable that exists only within its scope and does not belong to the class.
+	Also explain if and possibly how a formal parameter plays into this: a formal parameter is saved as a unique local variable in a method's scope.
+What is a (byte) address? What do we use it for?
+	A byte address is an address that describes where on the stack a piece of information is. We can use it for pointers to point at certain addresses.
+Tell me about all the primitive types in Java (just one sentence each)
+	byte: A byte is an integer from -128 to 127 that takes up one byte of memory (8 bits).
+	short: A short is an integer from -32768 to 32767 that takes up two bytes of memory (16 bits).
+	int: An int is an integer from -2^31 to (2^31 - 1) that takes up four bytes of memory (32 bits).
+	long: A long is an integer from -2^63 to (2^63 - 1) that takes up eight bytes of memory (64 bits).
+	float: A float is a decimal with a sign, 6-9 place decimal accuracy, and a power of 2 that takes up four bytes of memory (32 bits).
+	double: A double is a decimal with a sign, some place decimal accuracy, and a power of 2 that takes up eight bytes of memory (64 bits).
+	boolean: A boolean is either true or false and takes up 1 bit of memory.
+	char: A char is a character with a number from 0 to (2^16 - 1) and takes up 2 bytes of memory (16 bits). 
+Define and explain the difference between:
+	Byte: 8 bits of memory, 2^8 possibilities.
+	Bit: a single piece of memory; either 0 or 1.
+	Binary: A base form of expressing numbers, similar to base 10, except '10' in binary = '2' in base 10.
+III.
+Define and explain the difference between:
+	Primary storage (main memory): The stack space of the computer. This memory is temporary, so if there was a power outage, this memory would be wiped.
+	Secondary storage: Permanent memory that takes a relatively long time to access and read.
+	Cache memory: This is also temporary memory. However, it takes a relatively short time to access.
+	Registers: Computers use these to compute.
+Define memory in general (maybe this is a bit philosophical...) 
+	In terms of what a computer needs from memory though
+	Memory is used to store information. On the stack, there is code space, stack space, and the heap. In the code space, the instructions for the program are stored. In the stack space, the functions that are being run with their parameters and local variables are stored. In the heap, the values of non-primitive (and some primitive) variables are stored. 
+What is a scope?
+	A scope is the area (i.e. the code/instructions) between two braces. In one scope 
+What is syntax? 
+	In terms of Java, syntax is the "language" of Java; it is the only way that Java can understand what the programmer wants it to do.
+Define pseudocode.
+	Pseudocode is a form of syntax similar to actual code; it is an intermediate step between formal requests and code. It is generally used in the design of programs.
+Define algorithm. 
+	An algorithm is a theoretical series of steps that culminates in a desired effect.
+IV.
+Complete table to the right. Give binary & decimal form
+How does the call stack look after System.exit(...) is done exiting?
+	It has nothing on it.
+Primitive types & the stack:
+	Are the values of primitive types ever kept on the stack? If so, when?
+		They are kept on the stack when the values are the parameters of a method or local variables.
+	When are they not kept on the stack?
+		They are not kept on the stack when they are not defined in the program (i.e. when pointers are used to point to them.)
+	What is on the stack in the above case, and what does it have to do with the value of the primitive type? 
+		The above case means that there is a pointer on the stack that points to the value, which is on the heap.
+Object (non-‐primitive) types & the stack: 
+	Same as above, but now with respect to Object types
+		1. When the "new" keyword is used, space is allocated in the heap, so non-primitive types are stored in the heap. Consequently, they must have pointers on the stack to point to their byte addresses.
