@@ -6,12 +6,12 @@ package chess;
  *
  * @author Kai-Zhan Lee
  * @see chess.ChessPiece
- * @see chess.pieces.King
- * @see chess.pieces.Queen
- * @see chess.pieces.Rook
- * @see chess.pieces.Bishop
- * @see chess.pieces.Knight
- * @see chess.pieces.Pawn
+ * @see chess.piece.King
+ * @see chess.piece.Queen
+ * @see chess.piece.Rook
+ * @see chess.piece.Bishop
+ * @see chess.piece.Knight
+ * @see chess.piece.Pawn
  *
  */
 public interface ChessPieces {

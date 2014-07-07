@@ -9,12 +9,12 @@ import java.util.ArrayList;
 
 import javax.swing.JComponent;
 
-import chess.pieces.Bishop;
-import chess.pieces.King;
-import chess.pieces.Knight;
-import chess.pieces.Pawn;
-import chess.pieces.Queen;
-import chess.pieces.Rook;
+import chess.piece.Bishop;
+import chess.piece.King;
+import chess.piece.Knight;
+import chess.piece.Pawn;
+import chess.piece.Queen;
+import chess.piece.Rook;
 
 /**
  * This is the chessboard of the project. It displays a chessboard with its

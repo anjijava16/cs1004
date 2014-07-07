@@ -2,9 +2,9 @@ package chess;
 
 import java.awt.Color;
 
-import chess.pieces.King;
-import chess.pieces.Pawn;
-import chess.pieces.Rook;
+import chess.piece.King;
+import chess.piece.Pawn;
+import chess.piece.Rook;
 
 public class Move implements Moves {
 

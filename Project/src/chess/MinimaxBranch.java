@@ -28,6 +28,11 @@ public class MinimaxBranch implements Runnable {
 	private final boolean maximize;
 
 	/**
+	 * The color of the caller.
+	 */
+	private final Color callerColor;
+
+	/**
 	 * The optimal move for the given player (the minimax algorithm assumes both
 	 * players are perfect).
 	 */
@@ -46,6 +51,19 @@ public class MinimaxBranch implements Runnable {
 
 	protected MinimaxBranch(
 			ChessBoard node,
+			Color callerColor,
+			int depth,
+			boolean maximize) {
+		this.node = node;
+		lastEdge = null;
+		this.depth = depth;
+		this.maximize = maximize;
+		this.callerColor = callerColor;
+		chosenMove = null;
+	}
+
+	protected MinimaxBranch(
+			ChessBoard node,
 			Move lastEdge,
 			int depth,
 			boolean maximize) {
@@ -53,6 +71,7 @@ public class MinimaxBranch implements Runnable {
 		this.lastEdge = lastEdge;
 		this.depth = depth;
 		this.maximize = maximize;
+		callerColor = node.oppositeColor(lastEdge.getPiece().getColor());
 		chosenMove = null;
 	}
 

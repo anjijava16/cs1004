@@ -46,11 +46,11 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
-import chess.pieces.Bishop;
-import chess.pieces.King;
-import chess.pieces.Knight;
-import chess.pieces.Queen;
-import chess.pieces.Rook;
+import chess.piece.Bishop;
+import chess.piece.King;
+import chess.piece.Knight;
+import chess.piece.Queen;
+import chess.piece.Rook;
 
 /**
  * ChessGame is the top-level game class for chess games.
@@ -1139,7 +1139,7 @@ public class ChessGame implements ColumbiaBlue {
 	private synchronized Move minimax() {
 		// Create a new branch.
 		MinimaxBranch branch =
-				new MinimaxBranch(chessBoard, null, minimaxDepth, true);
+				new MinimaxBranch(chessBoard, turn, minimaxDepth, true);
 
 		// Set the optimal move.
 		branch.run();
