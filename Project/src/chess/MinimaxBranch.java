@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-public class MinimaxBranch implements Runnable {
+public class MinimaxBranch extends Thread {
 
 	/**
 	 * The last edge of this move.
@@ -48,7 +48,7 @@ public class MinimaxBranch implements Runnable {
 	/**
 	 * The minimax move branches (edge then node) that come from this node.
 	 */
-	private ArrayList<MinimaxBranch> branches = new ArrayList<MinimaxBranch>();
+	private ArrayList<MinimaxBranch> children = new ArrayList<MinimaxBranch>();
 
 	protected MinimaxBranch(
 			ChessBoard node,
@@ -62,9 +62,17 @@ public class MinimaxBranch implements Runnable {
 		this.callerColor = callerColor;
 		chosenMove = null;
 		lock = new ReentrantLock(true);
+		if (depth != 0)
+			for (ChessPiece piece : node.getPieces(callerColor))
+				for (Move move : piece.getMoves())
+					children.add(new MinimaxBranch(
+							node.unreportedMove(move),
+							move,
+							depth - 1,
+							!maximize));
 	}
 
-	protected MinimaxBranch(
+	private MinimaxBranch(
 			ChessBoard node,
 			Move lastEdge,
 			int depth,
@@ -76,6 +84,14 @@ public class MinimaxBranch implements Runnable {
 		callerColor = node.oppositeColor(lastEdge.getPiece().getColor());
 		chosenMove = null;
 		lock = new ReentrantLock(true);
+		if (depth != 0)
+			for (ChessPiece piece : node.getPieces(callerColor))
+				for (Move move : piece.getMoves())
+					children.add(new MinimaxBranch(
+							node.unreportedMove(move),
+							move,
+							depth - 1,
+							!maximize));
 	}
 
 	public synchronized void run() {
@@ -103,29 +119,16 @@ public class MinimaxBranch implements Runnable {
 
 		// Get the best move
 		if (maximize) {
-			// Create more MinimaxBranchs and acquire their optimal moves.
-			for (Move move : moves) {
-				// Create another branch that will find its own optimal move.
-				MinimaxBranch branch =
-						new MinimaxBranch(
-								node.unreportedMove(move),
-								move,
-								depth - 1,
-								false);
+			// Acquire childrens' optimal moves.
+			for (MinimaxBranch branch : children)
+				branch.start();
 
-				// Get the optimal move.
-				branch.run();
-
-				// Add this branch to the branches ArrayList
-				branches.add(branch);
-			}
-
-			// Lock all of the branches until they finish.
-			for (MinimaxBranch branch : branches)
+			// Acquire all of the branches' locks before evaluating a move.
+			for (MinimaxBranch branch : children)
 				branch.lock.lock();
 
 			// Add the move(s) with the greatest score to choices
-			for (MinimaxBranch branch : branches) {
+			for (MinimaxBranch branch : children) {
 				Move move = branch.chosenMove;
 				if (choices.size() == 0)
 					choices.add(branch.lastEdge);
@@ -136,29 +139,16 @@ public class MinimaxBranch implements Runnable {
 					choices.add(branch.lastEdge);
 			}
 		} else {
-			// Create more MinimaxBranchs and acquire their optimal moves.
-			for (Move move : moves) {
-				// Create another branch that will find its own optimal move.
-				MinimaxBranch branch =
-						new MinimaxBranch(
-								node.unreportedMove(move),
-								move,
-								depth - 1,
-								true);
-
-				// Get the optimal move.
-				branch.run();
-
-				// Add this branch to the branches ArrayList
-				branches.add(branch);
-			}
+			// Acquire childrens' optimal moves.
+			for (MinimaxBranch branch : children)
+				branch.start();
 
 			// Lock all of the branches until they finish.
-			for (MinimaxBranch branch : branches)
+			for (MinimaxBranch branch : children)
 				branch.lock.lock();
 
 			// Add the move(s) with the greatest score to choices
-			for (MinimaxBranch branch : branches) {
+			for (MinimaxBranch branch : children) {
 				Move move = branch.chosenMove;
 				if (choices.size() == 0)
 					choices.add(branch.lastEdge);

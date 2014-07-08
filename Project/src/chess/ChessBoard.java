@@ -92,8 +92,10 @@ public class ChessBoard extends JComponent implements ChessPieces, ColumbiaBlue 
 			file++;
 			i++;
 		}
+
 		// After the tab (the piece IDs)
 		rank = file = 0;
+		i++;
 		while (i < line.length()) {
 			if (line.charAt(i) == '/') {
 				rank++;
@@ -266,7 +268,6 @@ public class ChessBoard extends JComponent implements ChessPieces, ColumbiaBlue 
 
 		// Update the moves log.
 		game.addMove(move);
-		game.gameLog.update();
 	}
 
 	/**

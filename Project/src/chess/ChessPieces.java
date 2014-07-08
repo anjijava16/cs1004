@@ -18,11 +18,11 @@ public interface ChessPieces {
 
 	// The pieces' values.
 	public static final int KING_VALUE = Integer.MAX_VALUE;
-	public static final int QUEEN_VALUE = 18;
-	public static final int ROOK_VALUE = 10;
-	public static final int BISHOP_VALUE = 7;
-	public static final int KNIGHT_VALUE = 6;
-	public static final int PAWN_VALUE = 2;
+	public static final int QUEEN_VALUE = 9;
+	public static final int ROOK_VALUE = 5;
+	public static final int BISHOP_VALUE = 3;
+	public static final int KNIGHT_VALUE = 3;
+	public static final int PAWN_VALUE = 1;
 
 	// The white pieces' characters, UTF-16.
 	public static final char WHITE_KING = '\u2654';

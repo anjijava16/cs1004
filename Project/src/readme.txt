@@ -26,25 +26,41 @@ Notes:
 	- We haven't gone over some of the classes I used; I just looked them up on
 	  the Java API.
 	- If you decide to play a setting with a computer, note that a 3-step
-	  minimax algorithm takes about 30 seconds to complete.
+	  minimax algorithm takes about 24.857 seconds to complete.
+	- The game log does not go any further than 41 moves (both player and
+	  opponent), so please just export the game log if you would like to save
+	  it.
+	- The time it takes for the computer to look ahead:
+	5 moves: A loooong time (probably will just take up too much memory)
+	4 moves: <Needed to force-quit both tries>
+	3 moves: 24.857 s
+	2 moves: 1.717 s
+	1 move: 0.077 s
+	- Ideally, this computer would have a database of moves for up to about 20
+	  moves.
 Classes:
 	class Game:
 		I created the Game class in order to make it easy to redesign the
 	 	"choosing" JFrame and implement other games by adding more buttons (or
 	 	whatever selection method the redesigned code is using) and more
 	 	packages.
-	package chess
-		class chess.ChessBoard:
-		class chess.ChessGame:
-		class chess.ChessPiece:
-		class chess.ChessPieces:
-		class chess.GameLog:
+	package chess: Everything a piece of code needs to play a chess game.
+		class chess.ChessBoard: A chess board on which "ChessPiece"s can be
+		                        moved.
+		class chess.ChessGame: The top-level chess game that contains all of
+		                       the graphics necessary for the user interface.
+		class chess.ChessPiece: Encapsulates a chess piece that is on a chess
+		                        board.
+		class chess.GameLog: The log for the game.
 		class chess.MinimaxBranch:
-		class chess.Move:
-		class chess.Position:
-		interface chess.ChessPieces:
-		interface chess.Moves:
-		package chess.piece
+		class chess.Move: The class that represents a chess-game move.
+		class chess.Position: A location (position) on the chess board.
+		interface chess.ChessPieces: The characters and values of the chess
+		                             pieces.
+		interface chess.Moves: The possible types of moves, as well as the
+		                       possible modifiers.
+		package chess.piece: All of the chess pieces (as well as the moves they
+		                     can make embedded in methods)
 			class chess.piece.Bishop
 			class chess.piece.King
 			class chess.piece.Knight

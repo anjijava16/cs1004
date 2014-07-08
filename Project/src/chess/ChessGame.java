@@ -24,6 +24,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Date;
 
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
@@ -109,7 +110,8 @@ public class ChessGame implements ColumbiaBlue {
 					new JMenuItem("Open Game"), // ctrl-o
 					new JMenuItem("Close"), // ctrl-w
 					new JMenuItem("Save Game"), // ctrl-s
-					new JMenuItem("Save As") // ctrl-S
+					new JMenuItem("Save As"), // ctrl-S
+					new JMenuItem("Export Game Log") // ctrl-G
 				},
 				// The "Game" menu items.
 				{
@@ -134,7 +136,8 @@ public class ChessGame implements ColumbiaBlue {
 					KeyEvent.VK_O,
 					KeyEvent.VK_W,
 					KeyEvent.VK_S,
-					KeyEvent.VK_S // Must be capital S.
+					KeyEvent.VK_S, // Must be capital S.
+					KeyEvent.VK_G
 				},
 				// The "Game" menu items's key codes for action listeners.
 				{
@@ -183,6 +186,11 @@ public class ChessGame implements ColumbiaBlue {
 						public void actionPerformed(ActionEvent ae) {
 							saveGameAs();
 						}
+					},
+					new ActionListener() { // Save as
+						public void actionPerformed(ActionEvent ae) {
+							exportGameLog();
+						}
 					}
 				},
 				// The "Game" menu items.
@@ -227,7 +235,8 @@ public class ChessGame implements ColumbiaBlue {
 					true,
 					true,
 					false,
-					false
+					false,
+					true
 				},
 				{
 					false,
@@ -469,6 +478,44 @@ public class ChessGame implements ColumbiaBlue {
 				" - " + settingsButtons[gameSetting].getText());
 	}
 
+	private void exportGameLog() {
+		// Create a file chooser for the user to choose a file.
+		JFileChooser fileChooser = new JFileChooser();
+		fileChooser.setDialogTitle("Export Game Log");
+
+		// Get the file name and path.
+		int result;
+		do {
+			result = fileChooser.showSaveDialog(new JFrame());
+			if (result == JFileChooser.CANCEL_OPTION)
+				return;
+		} while (result != JFileChooser.APPROVE_OPTION ||
+				fileChooser.getSelectedFile().isDirectory());
+
+		// Change the file's extension to ".chs".
+		saveFile = withExtension(fileChooser.getSelectedFile(), "chs");
+
+		// Create an ObjectOutputStream to write the game out.
+		PrintWriter writer = null;
+
+		try {
+			writer = new PrintWriter(new FileWriter(saveFile), true);
+		} catch (IOException ioe) {}
+
+		for (int i = 0; i < moves.size(); i += 2) {
+			writer.print(moves.get(i).toGameLogString());
+			for (int j = 12; j > moves.get(i).toGameLogString().length(); j--)
+				writer.print(" ");
+			if (i + 1 < moves.size())
+				writer.println(moves.get(i + 1).toGameLogString());
+		}
+
+		// Reset the frame title.
+		String saveFileName = saveFile.getName();
+		frame.setTitle(saveFileName.substring(0, saveFileName.length() - 4) +
+				" - " + settingsButtons[gameSetting].getText());
+	}
+
 	/**
 	 * A convenience method that returns a new file with the given file's name,
 	 * stripped of any extensions, and the extension.
@@ -552,7 +599,6 @@ public class ChessGame implements ColumbiaBlue {
 			menuBar.getMenu(3).getItem(2).setText("Hide Game Log");
 		else
 			menuBar.getMenu(3).getItem(2).setText("Show Game Log");
-		gameLog.update();
 	}
 
 	protected boolean showMoves;
@@ -619,7 +665,7 @@ public class ChessGame implements ColumbiaBlue {
 						new JButton("Computer vs. Computer") };
 		gameLog = new GameLog(this, frame);
 		moves = new ArrayList<Move>();
-		minimaxDepth = 5;
+		minimaxDepth = 2;
 		turn = chessBoard.WHITE;
 	}
 
@@ -640,7 +686,7 @@ public class ChessGame implements ColumbiaBlue {
 						new JButton("Computer vs. Computer") };
 		gameLog = new GameLog(this, frame);
 		moves = new ArrayList<Move>();
-		minimaxDepth = 5;
+		minimaxDepth = 2;
 		turn = chessBoard.WHITE;
 	}
 
@@ -790,14 +836,14 @@ public class ChessGame implements ColumbiaBlue {
 	 * used in player vs. computer and computer vs. computer. Coordinated with
 	 * the slider.
 	 */
-	JSpinner spinner = new JSpinner(new SpinnerNumberModel(5, 1, 5, 1));
+	JSpinner spinner = new JSpinner(new SpinnerNumberModel(2, 1, 5, 1));
 
 	/**
 	 * The slider for the number of steps used in the minimax algorithm. Only
 	 * used in player vs. computer and computer vs. computer. Coordinated with
 	 * the spinner.
 	 */
-	JSlider slider = new JSlider(SwingConstants.HORIZONTAL, 1, 5, 5);
+	JSlider slider = new JSlider(SwingConstants.HORIZONTAL, 1, 5, 2);
 
 	/**
 	 * The method that starts a game of chess for two human players.
@@ -805,7 +851,6 @@ public class ChessGame implements ColumbiaBlue {
 	private void playerVsPlayer() {
 		// Enable save, view game log, undo move, show moves.
 		menuBar.getMenu(1).getItem(3).setEnabled(true);
-		menuBar.getMenu(2).getItem(0).setEnabled(true);
 		menuBar.getMenu(2).getItem(1).setEnabled(true);
 		menuBar.getMenu(3).getItem(2).setEnabled(true);
 
@@ -969,7 +1014,6 @@ public class ChessGame implements ColumbiaBlue {
 			public void stateChanged(ChangeEvent ce) {
 				// Enable save, view game log, show moves.
 				menuBar.getMenu(1).getItem(3).setEnabled(true);
-				menuBar.getMenu(2).getItem(0).setEnabled(true);
 				menuBar.getMenu(2).getItem(1).setEnabled(true);
 				menuBar.getMenu(3).getItem(2).setEnabled(true);
 
@@ -1094,7 +1138,13 @@ public class ChessGame implements ColumbiaBlue {
 	private void computerTurn() {
 		System.out.println("Computer's turn executing");
 
+		Date dateBefore = new Date();
 		Move computerMove = minimax();
+		Date dateAfter = new Date();
+		System.out.println("ms 1: " + dateBefore.getTime());
+		System.out.println("ms 2: " + dateAfter.getTime());
+		System.out.println("Difference (sec): " +
+				(double) (dateAfter.getTime() - dateBefore.getTime()) / 1000);
 		if (computerMove == null) {
 			// Make it so that the _user_ wins.
 			toggleTurn();
@@ -1165,8 +1215,10 @@ public class ChessGame implements ColumbiaBlue {
 		// // Set the optimal move.
 		// branch.run();
 		//
+		// System.out.println("Chosen move " + branch.chosenMove);
 		// // Wait until it's complete.
 		// branch.lock.lock();
+		// System.out.println("Chosen move " + branch.chosenMove);
 		//
 		// // Return the optimal move.
 		// return branch.chosenMove;
@@ -1196,23 +1248,6 @@ public class ChessGame implements ColumbiaBlue {
 			boolean maximizingPlayer) {
 		if (edge != null)
 			edge.setScore();
-		{ // TODO Remove debugging block
-			for (int i = 0; i < minimaxDepth - depth; i++)
-				System.out.print("##");
-			if (edge != null)
-				System.out.println("Edge: " + edge);
-			for (int i = 0; i < minimaxDepth - depth; i++)
-				System.out.print("##");
-			if (edge != null)
-				System.out.println("Score: " + edge.getScore());
-			for (int i = 0; i < minimaxDepth - depth; i++)
-				System.out.print("##");
-			System.out.println("Depth: " + depth);
-			for (int i = 0; i < minimaxDepth - depth; i++)
-				System.out.print("##");
-			System.out.println("Node: \n" +
-					node.toIndentedString(2 * (minimaxDepth - depth)));
-		}
 
 		// If the depth is 0 or minimax is at a terminating node, return the
 		// last element in the edges vector, the heuristic value of the node.
@@ -1234,18 +1269,6 @@ public class ChessGame implements ColumbiaBlue {
 
 		if (minimaxDepth == 0)
 			return allMoves.get((int) (Math.random() * allMoves.size()));
-
-		{ // TODO Remove debugging block
-			for (int i = 0; i < minimaxDepth - depth; i++)
-				System.out.print("##");
-			System.out.println(allMoves.size() + " Possible Moves:");
-			for (Move move : allMoves) {
-				for (int i = 0; i < minimaxDepth - depth; i++)
-					System.out.print("##");
-				System.out.print("#");
-				System.out.println(move);
-			}
-		}
 
 		// What will be the possible optimal moves, looking depth steps ahead.
 		ArrayList<Move> choices = new ArrayList<Move>();
@@ -1327,13 +1350,6 @@ public class ChessGame implements ColumbiaBlue {
 		}
 
 		// Return an optimal move, after looking ahead depth steps.
-		{ // TODO Remove debugging block
-			for (int i = 0; i < minimaxDepth - depth; i++)
-				System.out.print("##");
-			System.out.println("Choices: ");
-			for (int i = 0; i < choices.size(); i++)
-				System.out.println(choices.get(i));
-		}
 		return choices.get((int) (Math.random() * choices.size()));
 	}
 
@@ -1364,8 +1380,7 @@ public class ChessGame implements ColumbiaBlue {
 		});
 
 		difficultyPanel.add(slider, BorderLayout.EAST);
-		slider.setMajorTickSpacing(5);
-		slider.setMinorTickSpacing(1);
+		slider.setMajorTickSpacing(1);
 		slider.setPaintTicks(true);
 		slider.setPaintLabels(true);
 		slider.setSnapToTicks(true);
@@ -1380,40 +1395,30 @@ public class ChessGame implements ColumbiaBlue {
 
 		final JButton continueButton = new JButton("Next Move");
 
-		continueButton.addChangeListener(new ChangeListener() {
-			public void stateChanged(ChangeEvent ce) {
-				computerMove();
+		continueButton.addMouseListener(new MouseAdapter() {
+			public void mouseClicked(MouseEvent me) {
+				Move computerMove = minimax();
+				moves.add(computerMove);
+				computerMove.execute();
+
+				System.err.println("Executed move: " + computerMove);
+				if (isGameOver()) {
+					endGame();
+					return;
+				}
+				toggleTurn();
+				if (isGameOver()) {
+					endGame();
+					return;
+				}
 			}
 		});
 
 		playingOptionsPanel.add(continueButton, BorderLayout.EAST);
 
 		frame.add(playingOptionsPanel, BorderLayout.NORTH);
-	}
-
-	private void computerMove() {
-		System.out.println("Computer's turn executing");
-
-		Move computerMove = minimax();
-		if (computerMove == null) {
-			// Make it so that the _user_ wins.
-			toggleTurn();
-			endGame();
-			return;
-		}
-
-		moves.add(computerMove);
-		computerMove.execute();
-		System.err.println("Executed move: " + computerMove);
-		if (isGameOver()) {
-			endGame();
-			return;
-		}
-		toggleTurn();
-		if (isGameOver()) {
-			endGame();
-			return;
-		}
+		frame.validate();
+		frame.pack();
 	}
 
 	/**
@@ -1543,6 +1548,9 @@ public class ChessGame implements ColumbiaBlue {
 
 		// Add the move to the moves ArrayList.
 		moves.add(move);
+
+		// Update the game log.
+		gameLog.update();
 	}
 
 	/**
@@ -1600,9 +1608,11 @@ public class ChessGame implements ColumbiaBlue {
 
 	protected void display(JComponent component) {
 		frame.add(component);
-		try {
-			this.wait(2000);
-		} catch (InterruptedException ie) {}
+		synchronized (this) {
+			try {
+				this.wait(2000);
+			} catch (InterruptedException ie) {}
+		}
 		frame.remove(component);
 	}
 }

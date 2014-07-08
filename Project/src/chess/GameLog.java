@@ -4,102 +4,99 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Graphics;
-import java.util.ArrayList;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.JTable;
+import javax.swing.table.TableColumn;
 
-public class GameLog extends JPanel {
-
-	private static final long serialVersionUID = 2443982736237939638L;
-
-	private static final int ROW_HEIGHT = 20;
-
-	private static final int COLUMN_WIDTH = 100;
+public class GameLog {
 
 	private ChessGame game;
 
 	private JFrame parentFrame;
 
-	private ArrayList<String[]> table;
+	private JTable table;
+
+	private JPanel panel;
 
 	protected GameLog(ChessGame game, JFrame parentFrame) {
 		this.game = game;
 		this.parentFrame = parentFrame;
-		table = new ArrayList<String[]>();
-		setPreferredSize(new Dimension(
-				2 * COLUMN_WIDTH,
-				parentFrame.getHeight()));
-		setBackground(Color.WHITE);
-		setVisible(false);
+		table = new JTable();
+		panel = new JPanel();
+		panel.setPreferredSize(new Dimension(223, parentFrame.getHeight()));
+		panel.setVisible(false);
 	}
 
 	public void paintComponent(Graphics g) {
+		panel.setBackground(Color.BLUE);
 		g.setColor(Color.BLACK);
-
-		// Draw the row lines.
-		for (int i = 0; i * ROW_HEIGHT < parentFrame.getHeight(); i++)
-			g.drawLine(0, i * ROW_HEIGHT, 2 * COLUMN_WIDTH, i * ROW_HEIGHT);
-
-		// Draw the column lines.
-		for (int i = 0; i < 2; i++)
-			g.drawLine(
-					i * COLUMN_WIDTH,
-					0,
-					i * COLUMN_WIDTH,
-					parentFrame.getHeight());
-
-		// Draw the actual table (the moves)
-		for (int i = 0; i < table.size(); i++)
-			for (int j = 0; j < 2; j++)
-				if (table.get(i)[j] != null)
-					g.drawChars(
-							table.get(i)[j].toCharArray(),
-							0,
-							table.get(i)[j].length(),
-							j * COLUMN_WIDTH + 3,
-							(i + 1) * ROW_HEIGHT - 3);
+		g.setFont(new Font("Helvetica", Font.PLAIN, 14));
+		update();
 	}
 
 	public boolean inFrame() {
 		for (Component component : parentFrame.getComponents())
-			if (component.equals(this))
+			if (component.equals(panel))
 				return true;
 		return false;
 	}
 
 	public void toggle() {
-		setVisible(!isVisible());
+		panel.setVisible(!panel.isVisible());
 
 		if (inFrame())
-			parentFrame.remove(this);
+			parentFrame.remove(panel);
 		else
-			parentFrame.add(this, BorderLayout.EAST);
+			parentFrame.add(panel, BorderLayout.EAST);
 
-		parentFrame.validate();
-		parentFrame.pack();
+		update();
 	}
 
-	public void update() {
-		for (Move move : game.moves)
-			System.out.println(move);
+	public synchronized void update() {
+		table = null;
 
-		table.clear();
+		// Set the data for the JTable
+		Object[] columnNames = new String[] { "#", "White", "Black" };
+		Object[][] data = new String[(game.moves.size() + 1) / 2 + 1][3];
+		data[0] = new String[] { "#", "White", "Black" };
+		for (int i = 1; i / 2 + 1 < data.length; i += 2)
+			if (i < game.moves.size())
+				data[i / 2 + 1] =
+						new String[] {
+								String.valueOf(i / 2 + 1) + ".",
+								game.moves.get(i - 1).toGameLogString(),
+								game.moves.get(i).toGameLogString() };
+			else
+				data[i / 2 + 1] =
+						new String[] {
+								String.valueOf(i / 2 + 1) + ".",
+								game.moves.get(i - 1).toGameLogString(),
+								"" };
 
-		table.add(new String[] { "White", "Black" });
+		// Set the JTable itself
+		table = new JTable(data, columnNames);
+		table.setEnabled(false);
 
-		for (int i = 0; i < table.size(); i += 2)
-			try {
-				table.add(new String[] {
-						game.moves.get(i).toGameLogString(),
-						game.moves.get(i + 1).toGameLogString() });
-			} catch (IndexOutOfBoundsException ioobe) {
-				table.add(new String[] {
-						game.moves.get(i).toGameLogString(),
-						"" });
-			}
+		// Set the column widths.
+		TableColumn column;
+		for (int i = 0; i < 3; i++) {
+			column = table.getColumnModel().getColumn(i);
+			if (i == 0)
+				column.setWidth(20);
+			else
+				column.setWidth(100);
+		}
 
+		panel.setBackground(Color.WHITE);
+		panel.removeAll();
+		panel.add(table, BorderLayout.CENTER);
+
+		panel.repaint();
+		parentFrame.validate();
 		parentFrame.pack();
 	}
 }
