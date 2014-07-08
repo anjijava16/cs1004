@@ -34,6 +34,18 @@ public class GameLog extends JPanel {
 
 		g.setColor(Color.BLACK);
 
+		// Draw the row lines.
+		for (int i = 0; i * ROW_HEIGHT < parentFrame.getHeight(); i++)
+			g.drawLine(0, i * ROW_HEIGHT, 2 * COLUMN_WIDTH, i * ROW_HEIGHT);
+
+		// Draw the column lines.
+		for (int i = 0; i < 2; i++)
+			g.drawLine(
+					i * COLUMN_WIDTH,
+					0,
+					i * COLUMN_WIDTH,
+					parentFrame.getHeight());
+
 		// Draw the actual table (the moves)
 		for (int i = 0; i < moves.size(); i++)
 			for (int j = 0; j < 2; j++) {
@@ -46,18 +58,6 @@ public class GameLog extends JPanel {
 							(j + 1) * COLUMN_WIDTH,
 							i * ROW_HEIGHT);
 			}
-
-		// Draw the row lines.
-		for (int i = 0; i * ROW_HEIGHT < parentFrame.getHeight(); i++)
-			g.drawLine(0, i * ROW_HEIGHT, 2 * COLUMN_WIDTH, i * ROW_HEIGHT);
-
-		// Draw the column lines.
-		for (int i = 0; i < 2; i++)
-			g.drawLine(
-					i * COLUMN_WIDTH,
-					0,
-					i * COLUMN_WIDTH,
-					parentFrame.getHeight());
 	}
 
 	public boolean inFrame() {
@@ -82,7 +82,7 @@ public class GameLog extends JPanel {
 		for (Move move : moves)
 			System.out.println(move);
 		this.moves.clear();
-		for (int i = 0; i < moves.size(); i += 2) {
+		for (int i = 0; i < moves.size(); i += 2)
 			try {
 				this.moves.add(new String[] {
 						moves.get(i).toGameLogString(),
@@ -92,9 +92,6 @@ public class GameLog extends JPanel {
 						moves.get(i).toGameLogString(),
 						"" });
 			}
-			System.out.println("Added [" + this.moves.get(i / 2)[0] + ", " +
-					this.moves.get(i / 2)[1] + "]");
-		}
 		repaint();
 		parentFrame.repaint();
 	}

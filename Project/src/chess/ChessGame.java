@@ -790,14 +790,14 @@ public class ChessGame implements ColumbiaBlue {
 	 * used in player vs. computer and computer vs. computer. Coordinated with
 	 * the slider.
 	 */
-	JSpinner spinner = new JSpinner(new SpinnerNumberModel(5, 0, 5, 1));
+	JSpinner spinner = new JSpinner(new SpinnerNumberModel(5, 1, 5, 1));
 
 	/**
 	 * The slider for the number of steps used in the minimax algorithm. Only
 	 * used in player vs. computer and computer vs. computer. Coordinated with
 	 * the spinner.
 	 */
-	JSlider slider = new JSlider(SwingConstants.HORIZONTAL, 0, 5, 5);
+	JSlider slider = new JSlider(SwingConstants.HORIZONTAL, 1, 5, 5);
 
 	/**
 	 * The method that starts a game of chess for two human players.
@@ -949,8 +949,7 @@ public class ChessGame implements ColumbiaBlue {
 		});
 
 		difficultyPanel.add(slider, BorderLayout.EAST);
-		slider.setMajorTickSpacing(5);
-		slider.setMinorTickSpacing(1);
+		slider.setMajorTickSpacing(1);
 		slider.setPaintTicks(true);
 		slider.setPaintLabels(true);
 		slider.setSnapToTicks(true);
@@ -972,6 +971,7 @@ public class ChessGame implements ColumbiaBlue {
 				menuBar.getMenu(2).getItem(1).setEnabled(true);
 				menuBar.getMenu(3).getItem(2).setEnabled(true);
 
+				// Display the frame and start the game
 				frame.remove(playingOptionsPanel);
 				frame.pack();
 				pcStartGame();
@@ -1214,7 +1214,8 @@ public class ChessGame implements ColumbiaBlue {
 
 		// If the depth is 0 or minimax is at a terminating node, return the
 		// last element in the edges vector, the heuristic value of the node.
-		if (depth == 0 || edge != null && edge.doesCheckMate())
+		if (depth == 0 && minimaxDepth != 0 || edge != null &&
+				edge.doesCheckMate())
 			return edge;
 
 		// The Move ArrayList that will contain all of the possible moves.
@@ -1228,6 +1229,9 @@ public class ChessGame implements ColumbiaBlue {
 		// Get all of the possible moves.
 		for (ChessPiece piece : chessBoard.getPieces(callerColor))
 			allMoves.addAll(piece.getMoves());
+
+		if (minimaxDepth == 0)
+			return allMoves.get((int) (Math.random() * allMoves.size()));
 
 		{ // TODO Remove debugging block
 			for (int i = 0; i < minimaxDepth - depth; i++)
@@ -1337,11 +1341,17 @@ public class ChessGame implements ColumbiaBlue {
 		menuBar.getMenu(2).getItem(1).setEnabled(true);
 		menuBar.getMenu(3).getItem(2).setEnabled(true);
 
+		playingOptionsPanel.removeAll();
+
 		JPanel difficultyPanel = new JPanel();
+
+		difficultyPanel.setBackground(new Color(196, 216, 226));
 
 		difficultyPanel.setBackground(COLUMBIA_BLUE);
 
-		difficultyPanel.add(new JLabel("Difficulty"), BorderLayout.WEST);
+		difficultyPanel.add(
+				new JLabel("Minimax Algorithm Depth"),
+				BorderLayout.WEST);
 
 		difficultyPanel.add(spinner, BorderLayout.CENTER);
 		spinner.addChangeListener(new ChangeListener() {
@@ -1366,13 +1376,17 @@ public class ChessGame implements ColumbiaBlue {
 
 		playingOptionsPanel.add(difficultyPanel, BorderLayout.SOUTH);
 
-		JButton continueButton = new JButton("Next Move");
+		final JButton continueButton = new JButton("Next Move");
 
 		continueButton.addChangeListener(new ChangeListener() {
 			public void stateChanged(ChangeEvent ce) {
-
+				computerMove();
 			}
 		});
+
+		playingOptionsPanel.add(continueButton, BorderLayout.EAST);
+
+		frame.add(playingOptionsPanel, BorderLayout.NORTH);
 	}
 
 	private void computerMove() {
