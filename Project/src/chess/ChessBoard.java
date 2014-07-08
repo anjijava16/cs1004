@@ -266,7 +266,7 @@ public class ChessBoard extends JComponent implements ChessPieces, ColumbiaBlue 
 
 		// Update the moves log.
 		game.addMove(move);
-		game.gameLog.update(game.getMoves());
+		game.gameLog.update();
 	}
 
 	/**

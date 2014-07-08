@@ -190,10 +190,7 @@ abstract public class ChessPiece extends JComponent implements ChessPieces {
 			}
 
 		// Execute the move, if possible, and return true, and otherwise false.
-		if (move != null && move.isPromotion()) {
-			move.setPromotedPiece(board.getGame().getPromotedPieceFromUser());
-			return true;
-		} else if (move != null && move.execute())
+		if (move != null && move.execute())
 			return true;
 		else
 			return false;

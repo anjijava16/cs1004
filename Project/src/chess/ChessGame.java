@@ -552,7 +552,7 @@ public class ChessGame implements ColumbiaBlue {
 			menuBar.getMenu(3).getItem(2).setText("Hide Game Log");
 		else
 			menuBar.getMenu(3).getItem(2).setText("Show Game Log");
-		gameLog.update(moves);
+		gameLog.update();
 	}
 
 	protected boolean showMoves;
@@ -583,7 +583,7 @@ public class ChessGame implements ColumbiaBlue {
 	/**
 	 * All of the moves in the game so far.
 	 */
-	private ArrayList<Move> moves;
+	protected ArrayList<Move> moves;
 
 	/**
 	 * The number of steps the recursive minimax method will use to determine
@@ -617,7 +617,7 @@ public class ChessGame implements ColumbiaBlue {
 						new JButton("Human vs. Human"),
 						new JButton("Human vs. Computer"),
 						new JButton("Computer vs. Computer") };
-		gameLog = new GameLog(frame);
+		gameLog = new GameLog(this, frame);
 		moves = new ArrayList<Move>();
 		minimaxDepth = 5;
 		turn = chessBoard.WHITE;
@@ -638,7 +638,7 @@ public class ChessGame implements ColumbiaBlue {
 						new JButton("Human vs. Human"),
 						new JButton("Human vs. Computer"),
 						new JButton("Computer vs. Computer") };
-		gameLog = new GameLog(frame);
+		gameLog = new GameLog(this, frame);
 		moves = new ArrayList<Move>();
 		minimaxDepth = 5;
 		turn = chessBoard.WHITE;
@@ -661,7 +661,7 @@ public class ChessGame implements ColumbiaBlue {
 		this.chessBoard = chessBoard;
 		menuBar = getJMenuBar();
 		showMoves = true;
-		gameLog = new GameLog(frame);
+		gameLog = new GameLog(this, frame);
 		this.moves = moves;
 		minimaxDepth = minimaxSteps.intValue();
 		turn = moves.size() % 2 == 0 ? chessBoard.WHITE : chessBoard.BLACK;
@@ -803,8 +803,9 @@ public class ChessGame implements ColumbiaBlue {
 	 * The method that starts a game of chess for two human players.
 	 */
 	private void playerVsPlayer() {
-		// Enable save, view game log, show moves.
+		// Enable save, view game log, undo move, show moves.
 		menuBar.getMenu(1).getItem(3).setEnabled(true);
+		menuBar.getMenu(2).getItem(0).setEnabled(true);
 		menuBar.getMenu(2).getItem(1).setEnabled(true);
 		menuBar.getMenu(3).getItem(2).setEnabled(true);
 
@@ -968,6 +969,7 @@ public class ChessGame implements ColumbiaBlue {
 			public void stateChanged(ChangeEvent ce) {
 				// Enable save, view game log, show moves.
 				menuBar.getMenu(1).getItem(3).setEnabled(true);
+				menuBar.getMenu(2).getItem(0).setEnabled(true);
 				menuBar.getMenu(2).getItem(1).setEnabled(true);
 				menuBar.getMenu(3).getItem(2).setEnabled(true);
 

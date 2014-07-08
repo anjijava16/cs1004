@@ -18,20 +18,24 @@ public class GameLog extends JPanel {
 
 	private static final int COLUMN_WIDTH = 100;
 
+	private ChessGame game;
+
 	private JFrame parentFrame;
 
-	private ArrayList<String[]> moves;
+	private ArrayList<String[]> table;
 
-	protected GameLog(JFrame parentFrame) {
+	protected GameLog(ChessGame game, JFrame parentFrame) {
+		this.game = game;
 		this.parentFrame = parentFrame;
-		moves = new ArrayList<String[]>();
+		table = new ArrayList<String[]>();
+		setPreferredSize(new Dimension(
+				2 * COLUMN_WIDTH,
+				parentFrame.getHeight()));
 		setBackground(Color.WHITE);
 		setVisible(false);
 	}
 
 	public void paintComponent(Graphics g) {
-		setSize(new Dimension(2 * COLUMN_WIDTH, parentFrame.getHeight()));
-
 		g.setColor(Color.BLACK);
 
 		// Draw the row lines.
@@ -47,17 +51,15 @@ public class GameLog extends JPanel {
 					parentFrame.getHeight());
 
 		// Draw the actual table (the moves)
-		for (int i = 0; i < moves.size(); i++)
-			for (int j = 0; j < 2; j++) {
-				System.out.println(moves.get(i)[j]);
-				if (moves.get(i)[j] != null)
+		for (int i = 0; i < table.size(); i++)
+			for (int j = 0; j < 2; j++)
+				if (table.get(i)[j] != null)
 					g.drawChars(
-							moves.get(i)[j].toCharArray(),
+							table.get(i)[j].toCharArray(),
 							0,
-							moves.get(i)[j].length(),
-							(j + 1) * COLUMN_WIDTH,
-							i * ROW_HEIGHT);
-			}
+							table.get(i)[j].length(),
+							j * COLUMN_WIDTH + 3,
+							(i + 1) * ROW_HEIGHT - 3);
 	}
 
 	public boolean inFrame() {
@@ -69,30 +71,35 @@ public class GameLog extends JPanel {
 
 	public void toggle() {
 		setVisible(!isVisible());
+
 		if (inFrame())
 			parentFrame.remove(this);
 		else
 			parentFrame.add(this, BorderLayout.EAST);
+
 		parentFrame.validate();
 		parentFrame.pack();
 	}
 
-	public void update(ArrayList<Move> moves) {
-		System.err.println("Updating game log...");
-		for (Move move : moves)
+	public void update() {
+		for (Move move : game.moves)
 			System.out.println(move);
-		this.moves.clear();
-		for (int i = 0; i < moves.size(); i += 2)
+
+		table.clear();
+
+		table.add(new String[] { "White", "Black" });
+
+		for (int i = 0; i < table.size(); i += 2)
 			try {
-				this.moves.add(new String[] {
-						moves.get(i).toGameLogString(),
-						moves.get(i + 1).toGameLogString() });
+				table.add(new String[] {
+						game.moves.get(i).toGameLogString(),
+						game.moves.get(i + 1).toGameLogString() });
 			} catch (IndexOutOfBoundsException ioobe) {
-				this.moves.add(new String[] {
-						moves.get(i).toGameLogString(),
+				table.add(new String[] {
+						game.moves.get(i).toGameLogString(),
 						"" });
 			}
-		repaint();
-		parentFrame.repaint();
+
+		parentFrame.pack();
 	}
 }
