@@ -52,7 +52,8 @@ Classes:
 		class chess.ChessPiece: Encapsulates a chess piece that is on a chess
 		                        board.
 		class chess.GameLog: The log for the game.
-		class chess.MinimaxBranch:
+		class chess.MinimaxBranch: Don't pay attention to this -- it's for
+		                           future development.
 		class chess.Move: The class that represents a chess-game move.
 		class chess.Position: A location (position) on the chess board.
 		interface chess.ChessPieces: The characters and values of the chess
