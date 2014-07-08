@@ -1,6 +1,12 @@
 package chess;
 
 import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Point;
+import java.awt.Polygon;
+
+import javax.swing.JComponent;
 
 import chess.piece.King;
 import chess.piece.Pawn;
@@ -305,21 +311,21 @@ public class Move implements Moves {
 	 * @return Whether this move will check the opponent.
 	 */
 	public boolean doesCheck() {
-		return modifier.equals(CHECK) || modifier.equals(DOUBLE_CHECK);
+		return CHECK.equals(modifier) || DOUBLE_CHECK.equals(modifier);
 	}
 
 	/**
 	 * @return Whether this move will double check the opponent.
 	 */
 	public boolean doesDoubleCheck() {
-		return modifier.equals(DOUBLE_CHECK);
+		return DOUBLE_CHECK.equals(modifier);
 	}
 
 	/**
 	 * @return Whether this move will checkmate the opponent.
 	 */
 	public boolean doesCheckMate() {
-		return modifier.equals(CHECKMATE);
+		return CHECKMATE.equals(modifier);
 	}
 
 	/**
@@ -475,6 +481,69 @@ public class Move implements Moves {
 			move = (Move) super.clone();
 		} catch (CloneNotSupportedException cnse) {}
 		return move;
+	}
+
+	public void display() {
+		if (isInvalid())
+			return;
+		JComponent component = new JComponent() {
+			private static final long serialVersionUID = -4492037153597816747L;
+
+			public void paintComponent(Graphics g) {
+				Graphics2D g2 = (Graphics2D) g;
+				g2.setBackground(Color.BLUE);
+				// The two points at the tail of the arrow (.25 units away).
+				int square = ChessBoard.SQUARE_SIZE;
+				int x1 = (int) ((position.getFile() - 0.5) * square);
+				int y1 = (int) ((position.getRank() - 0.5) * square);
+				int x2 = (int) ((destination.getRank() - 0.5) * square);
+				int y2 = (int) ((destination.getFile() - 0.5) * square);
+				double m = (y1 - y2) / (x1 - x2);
+				double d =
+						Math.sqrt(Math.pow(y1 - y2, 2) + Math.pow(x1 - x2, 2));
+
+				// The points go around.
+				Point[] arrow = new Point[7];
+				arrow[0] =
+						new Point(
+								(int) (0.25 * m / Math.sqrt(m * m + 1)) + x1,
+								(int) (0.25 / Math.sqrt(m * m + 1)) + y1);
+				arrow[1] =
+						new Point(
+								(int) (0.25 * m / Math.sqrt(m * m + 1) + 0.62 *
+										d * m / Math.sqrt(m * m + 1) + x1),
+								(int) (0.25 / Math.sqrt(m * m + 1) + 0.62 * d /
+										Math.sqrt(m * m + 1) + y1));
+				arrow[2] =
+						new Point((int) (0.5 * m / Math.sqrt(m * m + 1) + 0.62 *
+								d * m / Math.sqrt(m * m + 1) + x1), (int) (0.5 /
+								Math.sqrt(m * m + 1) + 0.62 * d /
+								Math.sqrt(m * m + 1) + y1));
+				arrow[3] = new Point(x2, y2);
+				arrow[4] =
+						new Point(
+								(int) (-0.5 * m / Math.sqrt(m * m + 1) + 0.62 *
+										d * m / Math.sqrt(m * m + 1) + x1),
+								(int) (-0.5 / Math.sqrt(m * m + 1) + 0.62 * d /
+										Math.sqrt(m * m + 1) + y1));
+				arrow[5] =
+						new Point(
+								(int) (-0.25 * m / Math.sqrt(m * m + 1) + 0.62 *
+										d * m / Math.sqrt(m * m + 1) + x1),
+								(int) (-0.25 / Math.sqrt(m * m + 1) + 0.62 * d /
+										Math.sqrt(m * m + 1) + y1));
+				arrow[6] =
+						new Point(
+								(int) (-0.25 * m / Math.sqrt(m * m + 1)) + x1,
+								(int) (-0.25 / Math.sqrt(m * m + 1)) + y1);
+				Polygon polygon = new Polygon();
+				for (Point point : arrow)
+					polygon.addPoint(point.x, point.y);
+				g2.draw(polygon);
+			}
+		};
+
+		piece.board.getGame().display(component);
 	}
 
 	/**

@@ -25,6 +25,8 @@ Notes:
 	  earlier versions do not support iterator for loops with arrays.
 	- We haven't gone over some of the classes I used; I just looked them up on
 	  the Java API.
+	- If you decide to play a setting with a computer, note that a 3-step
+	  minimax algorithm takes about 30 seconds to complete.
 Classes:
 	class Game:
 		I created the Game class in order to make it easy to redesign the

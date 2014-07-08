@@ -3,6 +3,7 @@ package chess;
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class MinimaxBranch implements Runnable {
 
@@ -60,6 +61,7 @@ public class MinimaxBranch implements Runnable {
 		this.maximize = maximize;
 		this.callerColor = callerColor;
 		chosenMove = null;
+		lock = new ReentrantLock(true);
 	}
 
 	protected MinimaxBranch(
@@ -73,9 +75,11 @@ public class MinimaxBranch implements Runnable {
 		this.maximize = maximize;
 		callerColor = node.oppositeColor(lastEdge.getPiece().getColor());
 		chosenMove = null;
+		lock = new ReentrantLock(true);
 	}
 
 	public synchronized void run() {
+		lock.lock();
 		chosenMove = getOptimalMove();
 		lock.unlock();
 	}
@@ -84,14 +88,13 @@ public class MinimaxBranch implements Runnable {
 		if (lastEdge != null)
 			lastEdge.setScore();
 
-		// If the depth is 0 or minimax is at a terminating node, return the
-		// last element in the edges vector, the heuristic value of the node.
-		if (depth == 0 || lastEdge != null && lastEdge.doesCheckMate())
+		// If the last edge done does a checkmate, return that edge, which
+		// contains the heuristic value of the node
+		if (lastEdge != null && lastEdge.doesCheckMate())
 			return lastEdge;
 
 		// Get all of the possible moves.
 		ArrayList<Move> moves = new ArrayList<Move>();
-		Color callerColor = node.oppositeColor(lastEdge.getPiece().getColor());
 		for (ChessPiece piece : node.getPieces(callerColor))
 			moves.addAll(piece.getMoves());
 

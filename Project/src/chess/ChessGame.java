@@ -27,6 +27,7 @@ import java.util.ArrayList;
 
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -491,7 +492,7 @@ public class ChessGame implements ColumbiaBlue {
 	}
 
 	/**
-	 * Undoes the last move executed. TODO
+	 * Undoes the last move executed.
 	 */
 	private void undoMove() {
 		System.err.println("undoMove() called.");
@@ -500,20 +501,41 @@ public class ChessGame implements ColumbiaBlue {
 		moves.remove(moves.size() - 1);
 	}
 
+	private Move hintMove;
+
 	/**
-	 * Shows the human a hint. TODO
+	 * Shows the human a hint (Only for Human vs. Computer or Human vs. Human).
+	 * TODO
 	 */
 	private void showHint() {
-		System.err.println("showHint() called.");
-		System.err.println();
+		hintMove = minimax();
+		if (gameSetting == 0)
+			hintMove.display();
+		else if (gameSetting == 1)
+			if (turn.equals(computerColor)) {
+				toggleTurn();
+				hintMove.display();
+				toggleTurn();
+			} else
+				hintMove.display();
 	}
 
 	/**
 	 * Shows the last move executed. TODO
 	 */
 	private void showLastMove() {
-		System.err.println("showLastMove() called.");
-		System.err.println();
+		Move lastMove = moves.get(moves.size() - 1);
+		System.out.println("Displaying...");
+		if (gameSetting == 0)
+			lastMove.display();
+		else if (gameSetting == 1)
+			if (turn.equals(computerColor)) {
+				toggleTurn();
+				lastMove.display();
+				toggleTurn();
+			} else
+				lastMove.display();
+		System.out.println("Finished displaying...");
 	}
 
 	/**
@@ -768,14 +790,14 @@ public class ChessGame implements ColumbiaBlue {
 	 * used in player vs. computer and computer vs. computer. Coordinated with
 	 * the slider.
 	 */
-	JSpinner spinner = new JSpinner(new SpinnerNumberModel(5, 0, 10, 1));
+	JSpinner spinner = new JSpinner(new SpinnerNumberModel(5, 0, 5, 1));
 
 	/**
 	 * The slider for the number of steps used in the minimax algorithm. Only
 	 * used in player vs. computer and computer vs. computer. Coordinated with
 	 * the spinner.
 	 */
-	JSlider slider = new JSlider(SwingConstants.HORIZONTAL, 0, 10, 5);
+	JSlider slider = new JSlider(SwingConstants.HORIZONTAL, 0, 5, 5);
 
 	/**
 	 * The method that starts a game of chess for two human players.
@@ -1057,11 +1079,8 @@ public class ChessGame implements ColumbiaBlue {
 	 * The to-be-executed move of the computer. Calculated while the user
 	 * thinks.
 	 */
-	private Move computerMove;
-
 	private void pcPlayGame() {
 		frame.repaint();
-		computerMove = minimax();
 		if (turn.equals(computerColor))
 			computerTurn();
 	}
@@ -1073,6 +1092,7 @@ public class ChessGame implements ColumbiaBlue {
 	private void computerTurn() {
 		System.out.println("Computer's turn executing");
 
+		Move computerMove = minimax();
 		if (computerMove == null) {
 			// Make it so that the _user_ wins.
 			toggleTurn();
@@ -1092,7 +1112,6 @@ public class ChessGame implements ColumbiaBlue {
 			endGame();
 			return;
 		}
-		minimax();
 	}
 
 	/**
@@ -1137,18 +1156,19 @@ public class ChessGame implements ColumbiaBlue {
 	// }
 
 	private synchronized Move minimax() {
-		// Create a new branch.
-		MinimaxBranch branch =
-				new MinimaxBranch(chessBoard, turn, minimaxDepth, true);
-
-		// Set the optimal move.
-		branch.run();
-
-		// Wait until it's complete.
-		branch.lock.lock();
-
-		// Return the optimal move.
-		return branch.chosenMove;
+		// // Create a new branch.
+		// MinimaxBranch branch =
+		// new MinimaxBranch(chessBoard, turn, minimaxDepth, true);
+		//
+		// // Set the optimal move.
+		// branch.run();
+		//
+		// // Wait until it's complete.
+		// branch.lock.lock();
+		//
+		// // Return the optimal move.
+		// return branch.chosenMove;
+		return minimax(chessBoard, null, minimaxDepth, true);
 	}
 
 	/**
@@ -1167,149 +1187,149 @@ public class ChessGame implements ColumbiaBlue {
 	 * @return The optimal move for this player, after looking the given number
 	 *         of times ahead.
 	 */
-	// private Move minimax(
-	// ChessBoard node,
-	// Move edge,
-	// int depth,
-	// boolean maximizingPlayer) {
-	// if (edge != null)
-	// edge.setScore();
-	// { // TODO Remove debugging block
-	// for (int i = 0; i < minimaxDepth - depth; i++)
-	// System.out.print("##");
-	// if (edge != null)
-	// System.out.println("Edge: " + edge);
-	// for (int i = 0; i < minimaxDepth - depth; i++)
-	// System.out.print("##");
-	// if (edge != null)
-	// System.out.println("Score: " + edge.getScore());
-	// for (int i = 0; i < minimaxDepth - depth; i++)
-	// System.out.print("##");
-	// System.out.println("Depth: " + depth);
-	// for (int i = 0; i < minimaxDepth - depth; i++)
-	// System.out.print("##");
-	// System.out.println("Node: \n" +
-	// node.toIndentedString(2 * (minimaxDepth - depth)));
-	// }
-	//
-	// // If the depth is 0 or minimax is at a terminating node, return the
-	// // last element in the edges vector, the heuristic value of the node.
-	// if (depth == 0 || edge != null && edge.doesCheckMate())
-	// return edge;
-	//
-	// // The Move ArrayList that will contain all of the possible moves.
-	// ArrayList<Move> allMoves = new ArrayList<Move>();
-	//
-	// // The color of whichever player is calling this method.
-	// Color callerColor = turn;
-	// if (!maximizingPlayer)
-	// callerColor = chessBoard.oppositeColor(turn);
-	//
-	// // Get all of the possible moves.
-	// for (ChessPiece piece : chessBoard.getPieces(callerColor))
-	// allMoves.addAll(piece.getMoves());
-	//
-	// { // TODO Remove debugging block
-	// for (int i = 0; i < minimaxDepth - depth; i++)
-	// System.out.print("##");
-	// System.out.println(allMoves.size() + " Possible Moves:");
-	// for (Move move : allMoves) {
-	// for (int i = 0; i < minimaxDepth - depth; i++)
-	// System.out.print("##");
-	// System.out.print("#");
-	// System.out.println(move);
-	// }
-	// }
-	//
-	// // What will be the possible optimal moves, looking depth steps ahead.
-	// ArrayList<Move> choices = new ArrayList<Move>();
-	// // The move after applying the minimax algorithm
-	// Move minimax;
-	// if (maximizingPlayer) {
-	// // Set the moves' heuristic values after looking depth steps ahead
-	// for (Move move : allMoves) {
-	// // Get what the child node says is the optimal move, assuming
-	// // the current edge is traveled down.
-	//
-	// // Set the minimax move to what the child node says it will be.
-	// minimax = minimax(
-	// // The child node (the board with the move executed).
-	// node.unreportedMove(move),
-	// move,
-	// depth - 1,
-	// false);
-	//
-	// minimax.setScore();
-	//
-	// // Max score for other player.
-	// int maxScoreForThisPlayer = 0;
-	//
-	// // Maximize the scores in the choices vector
-	// if (maxScoreForThisPlayer < minimax.getScore()) {
-	// maxScoreForThisPlayer = minimax.getScore();
-	// continue;
-	// }
-	//
-	// move.addScore(maxScoreForThisPlayer);
-	// }
-	//
-	// // Choose a possible move among the choices
-	// for (Move move : allMoves)
-	// if (choices.size() == 0)
-	// choices.add(move);
-	// else if (choices.get(0).getScore() < move.getScore()) {
-	// choices.clear();
-	// choices.add(move);
-	// } else if (choices.get(0).getScore() == move.getScore())
-	// choices.add(move);
-	// } else {
-	// // Set the moves' heuristic values after looking depth steps ahead
-	// for (Move move : allMoves) {
-	// // Get what the child node says is the optimal move, assuming
-	// // the current edge is traveled down.
-	//
-	// // Set the minimax move to what the child node says it will be.
-	// minimax = minimax(
-	// // The child node (the board with the move executed).
-	// node.unreportedMove(move),
-	// move,
-	// depth - 1,
-	// true);
-	//
-	// minimax.setScore();
-	//
-	// // Max score for other player.
-	// int maxScoreForOtherPlayer = 0;
-	//
-	// // Maximize the scores in the choices vector
-	// if (maxScoreForOtherPlayer > minimax.getScore()) {
-	// maxScoreForOtherPlayer = minimax.getScore();
-	// continue;
-	// }
-	//
-	// move.addScore(-1 * maxScoreForOtherPlayer);
-	// }
-	//
-	// for (Move move : allMoves)
-	// if (choices.size() == 0)
-	// choices.add(move);
-	// else if (choices.get(0).getScore() > move.getScore()) {
-	// choices.clear();
-	// choices.add(move);
-	// } else if (choices.get(0).getScore() == move.getScore())
-	// choices.add(move);
-	// }
-	//
-	// // Return an optimal move, after looking ahead depth steps.
-	// { // TODO Remove debugging block
-	// for (int i = 0; i < minimaxDepth - depth; i++)
-	// System.out.print("##");
-	// System.out.println("Choices: ");
-	// for (int i = 0; i < choices.size(); i++)
-	// System.out.println(choices.get(i));
-	// }
-	// return choices.get((int) (Math.random() * choices.size()));
-	// }
+	private synchronized Move minimax(
+			ChessBoard node,
+			Move edge,
+			int depth,
+			boolean maximizingPlayer) {
+		if (edge != null)
+			edge.setScore();
+		{ // TODO Remove debugging block
+			for (int i = 0; i < minimaxDepth - depth; i++)
+				System.out.print("##");
+			if (edge != null)
+				System.out.println("Edge: " + edge);
+			for (int i = 0; i < minimaxDepth - depth; i++)
+				System.out.print("##");
+			if (edge != null)
+				System.out.println("Score: " + edge.getScore());
+			for (int i = 0; i < minimaxDepth - depth; i++)
+				System.out.print("##");
+			System.out.println("Depth: " + depth);
+			for (int i = 0; i < minimaxDepth - depth; i++)
+				System.out.print("##");
+			System.out.println("Node: \n" +
+					node.toIndentedString(2 * (minimaxDepth - depth)));
+		}
+
+		// If the depth is 0 or minimax is at a terminating node, return the
+		// last element in the edges vector, the heuristic value of the node.
+		if (depth == 0 || edge != null && edge.doesCheckMate())
+			return edge;
+
+		// The Move ArrayList that will contain all of the possible moves.
+		ArrayList<Move> allMoves = new ArrayList<Move>();
+
+		// The color of whichever player is calling this method.
+		Color callerColor = turn;
+		if (!maximizingPlayer)
+			callerColor = chessBoard.oppositeColor(turn);
+
+		// Get all of the possible moves.
+		for (ChessPiece piece : chessBoard.getPieces(callerColor))
+			allMoves.addAll(piece.getMoves());
+
+		{ // TODO Remove debugging block
+			for (int i = 0; i < minimaxDepth - depth; i++)
+				System.out.print("##");
+			System.out.println(allMoves.size() + " Possible Moves:");
+			for (Move move : allMoves) {
+				for (int i = 0; i < minimaxDepth - depth; i++)
+					System.out.print("##");
+				System.out.print("#");
+				System.out.println(move);
+			}
+		}
+
+		// What will be the possible optimal moves, looking depth steps ahead.
+		ArrayList<Move> choices = new ArrayList<Move>();
+		// The move after applying the minimax algorithm
+		Move minimax;
+		if (maximizingPlayer) {
+			// Set the moves' heuristic values after looking depth steps ahead
+			for (Move move : allMoves) {
+				// Get what the child node says is the optimal move, assuming
+				// the current edge is traveled down.
+
+				// Set the minimax move to what the child node says it will be.
+				minimax = minimax(
+				// The child node (the board with the move executed).
+						node.unreportedMove(move),
+						move,
+						depth - 1,
+						false);
+
+				minimax.setScore();
+
+				// Max score for other player.
+				int maxScoreForThisPlayer = 0;
+
+				// Maximize the scores in the choices vector
+				if (maxScoreForThisPlayer < minimax.getScore()) {
+					maxScoreForThisPlayer = minimax.getScore();
+					continue;
+				}
+
+				move.addScore(maxScoreForThisPlayer);
+			}
+
+			// Choose a possible move among the choices
+			for (Move move : allMoves)
+				if (choices.size() == 0)
+					choices.add(move);
+				else if (choices.get(0).getScore() < move.getScore()) {
+					choices.clear();
+					choices.add(move);
+				} else if (choices.get(0).getScore() == move.getScore())
+					choices.add(move);
+		} else {
+			// Set the moves' heuristic values after looking depth steps ahead
+			for (Move move : allMoves) {
+				// Get what the child node says is the optimal move, assuming
+				// the current edge is traveled down.
+
+				// Set the minimax move to what the child node says it will be.
+				minimax = minimax(
+				// The child node (the board with the move executed).
+						node.unreportedMove(move),
+						move,
+						depth - 1,
+						true);
+
+				minimax.setScore();
+
+				// Max score for other player.
+				int maxScoreForOtherPlayer = 0;
+
+				// Maximize the scores in the choices vector
+				if (maxScoreForOtherPlayer > minimax.getScore()) {
+					maxScoreForOtherPlayer = minimax.getScore();
+					continue;
+				}
+
+				move.addScore(-1 * maxScoreForOtherPlayer);
+			}
+
+			for (Move move : allMoves)
+				if (choices.size() == 0)
+					choices.add(move);
+				else if (choices.get(0).getScore() > move.getScore()) {
+					choices.clear();
+					choices.add(move);
+				} else if (choices.get(0).getScore() == move.getScore())
+					choices.add(move);
+		}
+
+		// Return an optimal move, after looking ahead depth steps.
+		{ // TODO Remove debugging block
+			for (int i = 0; i < minimaxDepth - depth; i++)
+				System.out.print("##");
+			System.out.println("Choices: ");
+			for (int i = 0; i < choices.size(); i++)
+				System.out.println(choices.get(i));
+		}
+		return choices.get((int) (Math.random() * choices.size()));
+	}
 
 	private void computerVsComputer() {
 		// Enable save, view game log, show moves.
@@ -1317,6 +1337,67 @@ public class ChessGame implements ColumbiaBlue {
 		menuBar.getMenu(2).getItem(1).setEnabled(true);
 		menuBar.getMenu(3).getItem(2).setEnabled(true);
 
+		JPanel difficultyPanel = new JPanel();
+
+		difficultyPanel.setBackground(COLUMBIA_BLUE);
+
+		difficultyPanel.add(new JLabel("Difficulty"), BorderLayout.WEST);
+
+		difficultyPanel.add(spinner, BorderLayout.CENTER);
+		spinner.addChangeListener(new ChangeListener() {
+			public void stateChanged(ChangeEvent ce) {
+				minimaxDepth = ((Integer) spinner.getValue()).intValue();
+				slider.setValue(((Integer) spinner.getValue()).intValue());
+			}
+		});
+
+		difficultyPanel.add(slider, BorderLayout.EAST);
+		slider.setMajorTickSpacing(5);
+		slider.setMinorTickSpacing(1);
+		slider.setPaintTicks(true);
+		slider.setPaintLabels(true);
+		slider.setSnapToTicks(true);
+		slider.addChangeListener(new ChangeListener() {
+			public void stateChanged(ChangeEvent ce) {
+				minimaxDepth = slider.getValue();
+				spinner.setValue(slider.getValue());
+			}
+		});
+
+		playingOptionsPanel.add(difficultyPanel, BorderLayout.SOUTH);
+
+		JButton continueButton = new JButton("Next Move");
+
+		continueButton.addChangeListener(new ChangeListener() {
+			public void stateChanged(ChangeEvent ce) {
+
+			}
+		});
+	}
+
+	private void computerMove() {
+		System.out.println("Computer's turn executing");
+
+		Move computerMove = minimax();
+		if (computerMove == null) {
+			// Make it so that the _user_ wins.
+			toggleTurn();
+			endGame();
+			return;
+		}
+
+		moves.add(computerMove);
+		computerMove.execute();
+		System.err.println("Executed move: " + computerMove);
+		if (isGameOver()) {
+			endGame();
+			return;
+		}
+		toggleTurn();
+		if (isGameOver()) {
+			endGame();
+			return;
+		}
 	}
 
 	/**
@@ -1333,10 +1414,25 @@ public class ChessGame implements ColumbiaBlue {
 		} catch (IndexOutOfBoundsException ioobe) {
 			saveName = "New Game";
 		}
-		frame.setTitle(saveName + " - " +
-				settingsButtons[gameSetting].getText() + " - " +
-				(turn.equals(chessBoard.WHITE) ? "White" : "Black") +
-				" wins! " + " (Edited)");
+		if (isDraw())
+			frame.setTitle(saveName + " - " +
+					settingsButtons[gameSetting].getText() + " - " + "Draw!" +
+					" (Edited)");
+		else
+			frame.setTitle(saveName + " - " +
+					settingsButtons[gameSetting].getText() + " - " +
+					(turn.equals(chessBoard.WHITE) ? "White" : "Black") +
+					" wins! " + " (Edited)");
+	}
+
+	private boolean isDraw() {
+		ArrayList<Move> allMoves = new ArrayList<Move>();
+		for (ChessPiece piece : chessBoard.getPieces(turn))
+			allMoves.addAll(piece.getMoves());
+
+		King king = chessBoard.getKing(chessBoard.oppositeColor(turn));
+
+		return !king.isChecked() && allMoves.size() == 0;
 	}
 
 	/**
@@ -1484,5 +1580,13 @@ public class ChessGame implements ColumbiaBlue {
 		if (option == -1)
 			return pieces[0];
 		return pieces[option];
+	}
+
+	protected void display(JComponent component) {
+		frame.add(component);
+		try {
+			this.wait(2000);
+		} catch (InterruptedException ie) {}
+		frame.remove(component);
 	}
 }
