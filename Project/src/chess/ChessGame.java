@@ -334,7 +334,7 @@ public class ChessGame implements ColumbiaBlue {
 					moveString += line.charAt(i);
 					i++;
 				}
-				moves.add(Move.fromUTF8String(moveString));
+				moves.add(Move.fromUTF8String(chessBoard, moveString));
 				i++;
 			}
 			// Read in the number of minimax steps per move.
@@ -394,9 +394,7 @@ public class ChessGame implements ColumbiaBlue {
 			writer.println(gameSetting);
 			writer.println(chessBoard.toSaveString());
 			for (Move move : moves)
-				writer.print(move.getPiece().getID() + "|" +
-						move.getPosition() + move.getType() +
-						move.getDestination() + '\t');
+				writer.print(move.toSaveString() + '\t');
 			writer.println();
 			writer.println(minimaxDepth);
 
