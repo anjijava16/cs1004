@@ -1,1 +1,9 @@
-/EvoSim/
+EvoSim
+.metadata
+.DS_Store
+*/.DS_Store
+*/.metadata
+*/bin
+*/.classpath
+*/.project
+*/*.zip

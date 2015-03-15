@@ -20,7 +20,7 @@ public class MinimaxBranch extends Thread {
 	/**
 	 * How many steps (branches) this branch should look ahead.
 	 */
-	private final int depth;
+	// private final int depth;
 
 	/**
 	 * Whether to maximize or minimize the score (i.e. whether it's the original
@@ -57,7 +57,7 @@ public class MinimaxBranch extends Thread {
 			boolean maximize) {
 		this.node = node;
 		lastEdge = null;
-		this.depth = depth;
+		// this.depth = depth;
 		this.maximize = maximize;
 		this.callerColor = callerColor;
 		chosenMove = null;
@@ -79,7 +79,7 @@ public class MinimaxBranch extends Thread {
 			boolean maximize) {
 		this.node = node;
 		this.lastEdge = lastEdge;
-		this.depth = depth;
+		// this.depth = depth;
 		this.maximize = maximize;
 		callerColor = node.oppositeColor(lastEdge.getPiece().getColor());
 		chosenMove = null;

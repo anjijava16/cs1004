@@ -19,7 +19,7 @@ public class PlaySound {
 	};
 	
 	public static void playPitch(int pitchNumber) {
-		s.playSound(files[pitchNumber]);
+		s.playSound(System.getProperty("user.dir") + '/' + files[pitchNumber]);
 	}
 	
 	public static void playSequence() {

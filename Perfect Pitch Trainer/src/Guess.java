@@ -133,6 +133,7 @@ public class Guess {
 					.println("Would you like to continue? Please say either 'Yes' or 'No'");
 			Scanner scanner = new Scanner(System.in);
 			String userContinue = scanner.nextLine();
+			scanner.close();
 			if (userContinue.equals("Yes") | userContinue.equals("yes"))
 				break;
 			else if (userContinue.equals("No") | userContinue.equals("no")) {
@@ -148,6 +149,7 @@ public class Guess {
 				.println("Would you like to try again? Please say either 'Yes' or 'No'");
 		Scanner scanner = new Scanner(System.in);
 		String userTryAgain = scanner.nextLine();
+		scanner.close();
 		if (userTryAgain.equals("Yes") | userTryAgain.equals("yes")) {
 			System.out.println("");
 			return;
